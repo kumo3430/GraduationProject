@@ -36,7 +36,8 @@ struct LoginView: View {
 struct LoginHome : View {
     
     @State var index = 0
-    @State public var errorMessage = ""
+    @State public var errorMessage1 = ""
+    @State public var errorMessage2 = ""
 
     var body : some View{
         
@@ -75,14 +76,16 @@ struct LoginHome : View {
                 .padding(.top, 25)
             
             if self.index == 0{
-                Login(errorMessage: $errorMessage)
+                Login(errorMessage1: $errorMessage1)
             }
             else{
-                SignUp(errorMessage: $errorMessage)
+                SignUp(errorMessage2: $errorMessage2)
             }
             
             // 建立提示錯誤訊息
-            Text(errorMessage)
+            Text(errorMessage1)
+                .foregroundColor(.red)
+            Text(errorMessage2)
                 .foregroundColor(.red)
             
             if self.index == 0{
@@ -105,6 +108,11 @@ struct LoginHome : View {
             .padding(.top, 10)
         }
         .padding()
+        .onChange(of: index) { newValue in
+            // 切換到註冊頁面時，重置錯誤訊息
+            errorMessage1 = ""
+            errorMessage2 = ""
+        }
     }
 }
 
@@ -113,7 +121,7 @@ struct Login : View {
     @State var mail = ""
     @State var pass = ""
 //    @State private var errorMessage = ""
-    @Binding var errorMessage: String
+    @Binding var errorMessage1: String
     @State var isPasswordVisible = false
     struct UserData: Decodable {
         var id: String
@@ -132,11 +140,11 @@ struct Login : View {
                 }
                 .padding(.vertical, 20)
                 .onChange(of: mail) { newValue in
-                    if !errorMessage.isEmpty {
+                    if !errorMessage1.isEmpty {
                         if (mail.isEmpty || pass.isEmpty) {
-                            errorMessage = "請確認空格內都已輸入資料"
+                            errorMessage1 = "請確認空格內都已輸入資料"
                         } else {
-                            errorMessage = ""
+                            errorMessage1 = ""
                         }
                     }
                 }
@@ -164,11 +172,11 @@ struct Login : View {
                 }
                 .padding(.vertical, 20)
                 .onChange(of: pass) { newValue in
-                    if !errorMessage.isEmpty {
+                    if !errorMessage1.isEmpty {
                         if (mail.isEmpty || pass.isEmpty) {
-                            errorMessage = "請確認空格內都已輸入資料"
+                            errorMessage1 = "請確認空格內都已輸入資料"
                         } else {
-                            errorMessage = ""
+                            errorMessage1 = ""
                         }
                     }
                 }
@@ -185,7 +193,7 @@ struct Login : View {
                 // 我要輸入登入的function
                 // 登入成功後要改成true
                 if mail.isEmpty || pass.isEmpty {
-                    errorMessage = "請確認帳號密碼都有輸入"
+                    errorMessage1 = "請確認帳號密碼都有輸入"
                 } else {
                     login()
                 }
@@ -241,7 +249,7 @@ struct Login : View {
                         print("============== loginView ==============")
                         print(userData.message)
                         print("帳號或密碼輸入錯誤")
-                        errorMessage = "帳號或密碼輸入錯誤"
+                        errorMessage1 = "帳號或密碼輸入錯誤"
                         print("============== loginView ==============")
                     } else {
                         print("============== loginView ==============")
@@ -275,13 +283,12 @@ struct SignUp : View {
     @State var repass = ""
     @State var isPasswordVisible1 = false
     @State var isPasswordVisible2 = false
-    @Binding var errorMessage: String
+    @Binding var errorMessage2: String
     @State var set_date: Date = Date()
     @State var Set_date: String = ""
     
     struct UserData : Decodable {
         var userId: String?
-        var userName: String
         var email: String
         var password: String
         var create_at: String
@@ -299,12 +306,12 @@ struct SignUp : View {
                     TextField("Enter Email Address", text: self.$mail)
                 }
                 .padding(.vertical, 20)
-                onChange(of: mail) { newValue in
-                    if !errorMessage.isEmpty {
+                .onChange(of: mail) { newValue in
+                    if !errorMessage2.isEmpty {
                         if (mail.isEmpty || pass.isEmpty || repass.isEmpty) {
-                            errorMessage = "請確認空格內都已輸入資料"
+                            errorMessage2 = "請確認空格內都已輸入資料"
                         } else {
-                            errorMessage = ""
+                            errorMessage2 = ""
                         }
                     }
                 }
@@ -330,12 +337,12 @@ struct SignUp : View {
                     }
                 }
                 .padding(.vertical, 20)
-                onChange(of: pass) { newValue in
-                    if !errorMessage.isEmpty {
+                .onChange(of: pass) { newValue in
+                    if !errorMessage2.isEmpty {
                         if (mail.isEmpty || pass.isEmpty || repass.isEmpty) {
-                            errorMessage = "請確認空格內都已輸入資料"
+                            errorMessage2 = "請確認空格內都已輸入資料"
                         } else {
-                            errorMessage = ""
+                            errorMessage2 = ""
                         }
                     }
                 }
@@ -368,15 +375,13 @@ struct SignUp : View {
                 }
                 .padding(.vertical, 20)
                 .onChange(of: repass) { newValue in
-                    if !errorMessage.isEmpty {
-                        if (mail.isEmpty || pass.isEmpty || repass.isEmpty) {
-                            errorMessage = "請確認空格內都已輸入資料"
+                    if (mail.isEmpty || pass.isEmpty || repass.isEmpty) {
+                        errorMessage2 = "請確認空格內都已輸入資料"
+                    } else {
+                        if (pass != repass) {
+                            errorMessage2 = "密碼不一致 請重新輸入"
                         } else {
-                            if (pass != repass) {
-                                errorMessage = "密碼不一致 請重新輸入"
-                            } else {
-                                errorMessage = "" // 清除錯誤訊息
-                            }
+                            errorMessage2 = "" // 清除錯誤訊息
                         }
                     }
                 }
@@ -390,6 +395,11 @@ struct SignUp : View {
             
             Button(action: {
                 // 我要輸入註冊的function
+                if mail.isEmpty || pass.isEmpty || repass.isEmpty {
+                    errorMessage2 = "請確認帳號密碼都有輸入"
+                } else {
+                    register()
+                }
             }) {
                 Text("SIGNUP")
                     .foregroundColor(.white)
@@ -435,7 +445,7 @@ struct SignUp : View {
                 let decoder = JSONDecoder()
                 do {
                     //                    確認api會印出的所有內容
-                    //                    print(String(data: data, encoding: .utf8)!)
+                                        print(String(data: data, encoding: .utf8)!)
                     
                     let userData = try decoder.decode(UserData.self, from: data)
                     
@@ -445,7 +455,6 @@ struct SignUp : View {
                         print(userData)
 //                        print("使用者ID為：\(userData.userId)")
                         print("使用者ID為：\(userData.userId ?? "N/A")")
-                        print("使用者名稱為：\(userData.userName)")
                         print("使用者email為：\(userData.email)")
                         print("註冊日期為：\(userData.create_at)")
                         print("message：\(userData.message)")
@@ -453,20 +462,20 @@ struct SignUp : View {
                         
                     } else if (userData.message == "not yet filled") {
                         print("verifyMessage：\(userData.message)")
-                        errorMessage = "請確認電子郵件、使用者名稱、密碼都有輸入"
+                        errorMessage2 = "請確認電子郵件、使用者名稱、密碼都有輸入"
                     } else if (userData.message == "email is registered") {
                         print("verify - Message：\(userData.message)")
-                        errorMessage = "電子郵件已被註冊過 請重新輸入"
+                        errorMessage2 = "電子郵件已被註冊過 請重新輸入"
                     } else if (userData.message == "name is registered") {
                         print("verify - Message：\(userData.message)")
-                        errorMessage = "使用者名稱已被註冊過 請重新輸入"
+                        errorMessage2 = "使用者名稱已被註冊過 請重新輸入"
                     } else {
                         print("verify - Message：\(String(data: data, encoding: .utf8)!)")
-                        errorMessage = "註冊失敗請重新註冊"
+                        errorMessage2 = "註冊失敗請重新註冊"
                     }
                 } catch {
                     print("verify - 解碼失敗：\(error)")
-                    errorMessage = "註冊失敗請重新註冊"
+                    errorMessage2 = "註冊失敗請重新註冊"
                 }
             }
             // 測試
