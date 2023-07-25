@@ -223,6 +223,7 @@ struct SignUp : View {
 //                        Image(systemName: "eye")
 //                            .foregroundColor(.black)
 //                    }
+                    // yun 改
                     if isPasswordVisible2 {
                         TextField("Re-Enter", text: self.$repass)
                     } else {
