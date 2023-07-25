@@ -175,7 +175,8 @@ struct SignUp : View {
     @State var mail = ""
     @State var pass = ""
     @State var repass = ""
-    @State var isPasswordVisible = false
+    @State var isPasswordVisible1 = false
+    @State var isPasswordVisible2 = false
     
     var body : some View{
         
@@ -196,15 +197,15 @@ struct SignUp : View {
                         .frame(width: 15, height: 18)
                         .foregroundColor(.black)
                     
-                    if isPasswordVisible {
+                    if isPasswordVisible1 {
                         TextField("Password", text: self.$pass)
                     } else {
                         SecureField("Password", text: self.$pass)
                     }
                     Button(action: {
-                        isPasswordVisible.toggle()
+                        isPasswordVisible1.toggle()
                     }) {
-                        Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                        Image(systemName: isPasswordVisible1 ? "eye.slash" : "eye")
                             .foregroundColor(.black)
                     }
                 }.padding(.vertical, 20)
@@ -216,10 +217,21 @@ struct SignUp : View {
                         .resizable()
                         .frame(width: 15, height: 18)
                         .foregroundColor(.black)
-                    SecureField("Re-Enter", text: self.$repass)
+//                    SecureField("Re-Enter", text: self.$repass)
+//                    Button(action: {
+//                    }) {
+//                        Image(systemName: "eye")
+//                            .foregroundColor(.black)
+//                    }
+                    if isPasswordVisible2 {
+                        TextField("Re-Enter", text: self.$repass)
+                    } else {
+                        SecureField("Re-Enter", text: self.$repass)
+                    }
                     Button(action: {
+                        isPasswordVisible2.toggle()
                     }) {
-                        Image(systemName: "eye")
+                        Image(systemName: isPasswordVisible2 ? "eye.slash" : "eye")
                             .foregroundColor(.black)
                     }
                 }.padding(.vertical, 20)
