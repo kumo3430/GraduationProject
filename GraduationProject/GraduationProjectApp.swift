@@ -20,7 +20,7 @@ struct YourApp: App {
         if !isSignIn {
             LoginView()
         } else {
-            test()
+            MainView()
       }
     }
   }

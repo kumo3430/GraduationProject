@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		13AD35D42A70BB880003FF1B /* SpacedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D32A70BB880003FF1B /* SpacedView.swift */; };
+		13AD35D62A70BC0D0003FF1B /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D52A70BC0D0003FF1B /* CalendarView.swift */; };
+		13AD35D82A70BC350003FF1B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D72A70BC350003FF1B /* MainView.swift */; };
 		3B37A8D12A188BA6009BB504 /* GraduationProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B37A8D02A188BA6009BB504 /* GraduationProjectApp.swift */; };
 		3B37A8D32A188BA6009BB504 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B37A8D22A188BA6009BB504 /* ContentView.swift */; };
 		3B37A8D52A188BA6009BB504 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B37A8D42A188BA6009BB504 /* Assets.xcassets */; };
@@ -59,6 +62,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		13AD35D32A70BB880003FF1B /* SpacedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedView.swift; sourceTree = "<group>"; };
+		13AD35D52A70BC0D0003FF1B /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		13AD35D72A70BC350003FF1B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		3B37A8CD2A188BA5009BB504 /* GraduationProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GraduationProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B37A8D02A188BA6009BB504 /* GraduationProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraduationProjectApp.swift; sourceTree = "<group>"; };
 		3B37A8D22A188BA6009BB504 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -153,6 +159,9 @@
 				3BA700522A1CC5820096B2FF /* +View.swift */,
 				3B37A8D22A188BA6009BB504 /* ContentView.swift */,
 				3BFDFD632A1C655C0071798F /* LoginView.swift */,
+				13AD35D32A70BB880003FF1B /* SpacedView.swift */,
+				13AD35D52A70BC0D0003FF1B /* CalendarView.swift */,
+				13AD35D72A70BC350003FF1B /* MainView.swift */,
 				3BA700542A1CCB940096B2FF /* FireAuth.swift */,
 				3BA700562A1F3A860096B2FF /* ChatUser.swift */,
 				3BA700582A1F3B870096B2FF /* FirebaseManager.swift */,
@@ -345,12 +354,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BFDFD6A2A1C6E3D0071798F /* AppDelegate.swift in Sources */,
+				13AD35D82A70BC350003FF1B /* MainView.swift in Sources */,
 				3BA700552A1CCB940096B2FF /* FireAuth.swift in Sources */,
+				13AD35D62A70BC0D0003FF1B /* CalendarView.swift in Sources */,
 				3BA700592A1F3B870096B2FF /* FirebaseManager.swift in Sources */,
 				3BB30CB62A5FF26800036987 /* test.swift in Sources */,
 				3B37A8D32A188BA6009BB504 /* ContentView.swift in Sources */,
 				3BA700572A1F3A860096B2FF /* ChatUser.swift in Sources */,
 				3BFDFD662A1C69150071798F /* GoogleSigninBtn.swift in Sources */,
+				13AD35D42A70BB880003FF1B /* SpacedView.swift in Sources */,
 				3B37A8D12A188BA6009BB504 /* GraduationProjectApp.swift in Sources */,
 				3BA700532A1CC5820096B2FF /* +View.swift in Sources */,
 				3BFDFD642A1C655C0071798F /* LoginView.swift in Sources */,
