@@ -125,7 +125,7 @@ struct Login : View {
     @State var isPasswordVisible = false
     struct UserData: Decodable {
         var id: String
-        var userName: String
+        var email: String
         var message: String
     }
     
@@ -228,11 +228,12 @@ struct Login : View {
             }
         }
 
-        let url = URL(string: "http://127.0.0.1:8888/account/login.php")!
+//        let url = URL(string: "http://127.0.0.1:8888/account/login.php")!
+        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"
-        let body = ["userName": mail, "password": pass]
+        let body = ["email": mail, "password": pass]
         let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
         request.httpBody = jsonData
         URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
@@ -244,6 +245,7 @@ struct Login : View {
             else if let data = data{
                 let decoder = JSONDecoder()
                 do {
+                    print(String(data: data, encoding: .utf8)!)
                     let userData = try decoder.decode(UserData.self, from: data)
                     if userData.message == "no such account" {
                         print("============== loginView ==============")
@@ -255,7 +257,9 @@ struct Login : View {
                         print("============== loginView ==============")
                         print(userData)
                         print("使用者ID為：\(userData.id)")
-                        print("使用者名稱為：\(userData.userName)")
+                        print("使用者帳號為：\(userData.email)")
+                        UserDefaults.standard.set(true, forKey: "signIn")
+
                         print("============== loginView ==============")
                         UserDefaults.standard.set(true, forKey: "signIn")
                     }
@@ -398,6 +402,7 @@ struct SignUp : View {
                 if mail.isEmpty || pass.isEmpty || repass.isEmpty {
                     errorMessage2 = "請確認帳號密碼都有輸入"
                 } else {
+                    setTime()
                     register()
                 }
             }) {
@@ -415,6 +420,21 @@ struct SignUp : View {
             .shadow(radius: 15)
         }
     }
+    func setTime() {
+        Set_date = dateToDateString(set_date)
+    }
+    
+    func dateToDateString(_ date: Date) -> String {
+        let timeZone = NSTimeZone.local
+        let formatter = DateFormatter()
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "yyyy-MM-dd"
+        let dateString = formatter.string(from: date)
+        print(dateString)
+        return dateString
+    }
+    
+    
     func register() {
         class URLSessionSingleton {
             static let shared = URLSessionSingleton()
@@ -427,8 +447,8 @@ struct SignUp : View {
             }
         }
         
-        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
-//        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
+//        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
+        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"
@@ -458,6 +478,7 @@ struct SignUp : View {
                         print("使用者email為：\(userData.email)")
                         print("註冊日期為：\(userData.create_at)")
                         print("message：\(userData.message)")
+                        UserDefaults.standard.set(true, forKey: "signIn")
                         print("============== verifyView ==============")
                         
                     } else if (userData.message == "not yet filled") {
