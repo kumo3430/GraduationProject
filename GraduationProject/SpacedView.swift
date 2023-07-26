@@ -54,8 +54,16 @@ struct SpacedView: View {
             }
             .listStyle(PlainListStyle())
             .navigationBarTitle("間隔重複")
-            .navigationBarItems(trailing:
-                                    NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
+            .navigationBarItems(leading:
+                                    HStack {
+                Button {
+                    UserDefaults.standard.set(false, forKey: "signIn")
+                } label: {
+                    Image(systemName: "person.badge.minus")
+                }
+                
+            },
+                                trailing: NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
                 Image(systemName: "plus")
             }
             )

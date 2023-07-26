@@ -21,6 +21,7 @@ struct YourApp: App {
             LoginView()
         } else {
             MainView()
+//            test()
       }
     }
   }
