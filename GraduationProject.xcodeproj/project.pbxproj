@@ -10,6 +10,8 @@
 		13AD35D42A70BB880003FF1B /* SpacedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D32A70BB880003FF1B /* SpacedView.swift */; };
 		13AD35D62A70BC0D0003FF1B /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D52A70BC0D0003FF1B /* CalendarView.swift */; };
 		13AD35D82A70BC350003FF1B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AD35D72A70BC350003FF1B /* MainView.swift */; };
+		13D6E1E62A710D480049E5A5 /* verifyRegister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D6E1E52A710D480049E5A5 /* verifyRegister.swift */; };
+		13D6E1E92A710DA50049E5A5 /* SwiftSMTP in Frameworks */ = {isa = PBXBuildFile; productRef = 13D6E1E82A710DA50049E5A5 /* SwiftSMTP */; };
 		3B37A8D12A188BA6009BB504 /* GraduationProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B37A8D02A188BA6009BB504 /* GraduationProjectApp.swift */; };
 		3B37A8D32A188BA6009BB504 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B37A8D22A188BA6009BB504 /* ContentView.swift */; };
 		3B37A8D52A188BA6009BB504 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B37A8D42A188BA6009BB504 /* Assets.xcassets */; };
@@ -65,6 +67,7 @@
 		13AD35D32A70BB880003FF1B /* SpacedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedView.swift; sourceTree = "<group>"; };
 		13AD35D52A70BC0D0003FF1B /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		13AD35D72A70BC350003FF1B /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		13D6E1E52A710D480049E5A5 /* verifyRegister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = verifyRegister.swift; sourceTree = "<group>"; };
 		3B37A8CD2A188BA5009BB504 /* GraduationProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GraduationProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B37A8D02A188BA6009BB504 /* GraduationProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraduationProjectApp.swift; sourceTree = "<group>"; };
 		3B37A8D22A188BA6009BB504 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -96,6 +99,7 @@
 				3BFDFD4A2A1B47620071798F /* FirebaseAnalyticsSwift in Frameworks */,
 				3BFDFD4E2A1B47620071798F /* FirebaseAuth in Frameworks */,
 				3BFDFD5E2A1B47620071798F /* FirebaseMessaging in Frameworks */,
+				13D6E1E92A710DA50049E5A5 /* SwiftSMTP in Frameworks */,
 				3BFDFD432A1B443A0071798F /* GoogleSignIn in Frameworks */,
 				3BA700682A1F3EEF0096B2FF /* SDWebImageSwiftUI in Frameworks */,
 				3BFDFD542A1B47620071798F /* FirebaseDatabaseSwift in Frameworks */,
@@ -159,6 +163,7 @@
 				3BA700522A1CC5820096B2FF /* +View.swift */,
 				3B37A8D22A188BA6009BB504 /* ContentView.swift */,
 				3BFDFD632A1C655C0071798F /* LoginView.swift */,
+				13D6E1E52A710D480049E5A5 /* verifyRegister.swift */,
 				13AD35D32A70BB880003FF1B /* SpacedView.swift */,
 				13AD35D52A70BC0D0003FF1B /* CalendarView.swift */,
 				13AD35D72A70BC350003FF1B /* MainView.swift */,
@@ -232,6 +237,7 @@
 				3BFDFD5D2A1B47620071798F /* FirebaseMessaging */,
 				3BFDFD5F2A1B47620071798F /* FirebaseStorage */,
 				3BA700672A1F3EEF0096B2FF /* SDWebImageSwiftUI */,
+				13D6E1E82A710DA50049E5A5 /* SwiftSMTP */,
 			);
 			productName = GraduationProject;
 			productReference = 3B37A8CD2A188BA5009BB504 /* GraduationProject.app */;
@@ -309,6 +315,7 @@
 				3BFDFD412A1B443A0071798F /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				3BFDFD462A1B47620071798F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				3BA700662A1F3EEF0096B2FF /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				13D6E1E72A710DA40049E5A5 /* XCRemoteSwiftPackageReference "Swift-SMTP" */,
 			);
 			productRefGroup = 3B37A8CE2A188BA5009BB504 /* Products */;
 			projectDirPath = "";
@@ -366,6 +373,7 @@
 				3B37A8D12A188BA6009BB504 /* GraduationProjectApp.swift in Sources */,
 				3BA700532A1CC5820096B2FF /* +View.swift in Sources */,
 				3BFDFD642A1C655C0071798F /* LoginView.swift in Sources */,
+				13D6E1E62A710D480049E5A5 /* verifyRegister.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -721,6 +729,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		13D6E1E72A710DA40049E5A5 /* XCRemoteSwiftPackageReference "Swift-SMTP" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Kitura/Swift-SMTP";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 		3BA700662A1F3EEF0096B2FF /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
@@ -748,6 +764,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		13D6E1E82A710DA50049E5A5 /* SwiftSMTP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 13D6E1E72A710DA40049E5A5 /* XCRemoteSwiftPackageReference "Swift-SMTP" */;
+			productName = SwiftSMTP;
+		};
 		3BA700672A1F3EEF0096B2FF /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3BA700662A1F3EEF0096B2FF /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;

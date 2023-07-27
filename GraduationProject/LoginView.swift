@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftSMTP
 import FirebaseAuth
 import GoogleSignIn
 import Firebase
@@ -250,13 +251,14 @@ struct Login : View {
                     let userData = try decoder.decode(UserData.self, from: data)
                     if userData.message == "no such account" {
                         print("============== loginView ==============")
+                        print("login - userDate:\(userData)")
                         print(userData.message)
                         print("帳號或密碼輸入錯誤")
                         errorMessage1 = "帳號或密碼輸入錯誤"
                         print("============== loginView ==============")
                     } else {
                         print("============== loginView ==============")
-                        print(userData)
+                        print("login - userDate:\(userData)")
                         print("使用者ID為：\(userData.id)")
                         print("使用者帳號為：\(userData.email)")
                         UserDefaults.standard.set(true, forKey: "signIn")
@@ -286,12 +288,14 @@ struct SignUp : View {
     @State var mail = ""
     @State var pass = ""
     @State var repass = ""
+    @State private var verify = 0
     @State var isPasswordVisible1 = false
     @State var isPasswordVisible2 = false
     @Binding var errorMessage2: String
     @State var set_date: Date = Date()
     @State var Set_date: String = ""
-    
+    @State private var isShowingVerifyRegister = false
+
     struct UserData : Decodable {
         var userId: String?
         var email: String
@@ -400,12 +404,16 @@ struct SignUp : View {
             
             Button(action: {
                 // 我要輸入註冊的function
-                if mail.isEmpty || pass.isEmpty || repass.isEmpty {
-                    errorMessage2 = "請確認帳號密碼都有輸入"
-                } else {
-                    setTime()
-                    register()
-                }
+//                if mail.isEmpty || pass.isEmpty || repass.isEmpty {
+//                    errorMessage2 = "請確認帳號密碼都有輸入"
+//                } else {
+//                    setTime()
+//                    register()
+//                }
+                mix()
+                isShowingVerifyRegister = true
+
+//                verifyRegister(verify: $verify, mail: $mail, pass: $pass)
             }) {
                 Text("SIGNUP")
                     .foregroundColor(.white)
@@ -419,99 +427,170 @@ struct SignUp : View {
             .offset(y: -40)
             .padding(.bottom, -40)
             .shadow(radius: 15)
+            .sheet(isPresented: $isShowingVerifyRegister) {
+                           verifyRegister(verify: $verify, mail: $mail, pass: $pass)
+                       }
+//            .background(
+//                NavigationLink(
+//                    destination: verifyRegister(verify: $verify, mail: $mail, pass: $pass),
+//                    label: {
+//                        Text("註冊")
+//                    }
+//                )
+//
+//            )
         }
     }
-    func setTime() {
-        Set_date = dateToDateString(set_date)
-    }
-    
-    func dateToDateString(_ date: Date) -> String {
-        let timeZone = NSTimeZone.local
-        let formatter = DateFormatter()
-        formatter.timeZone = timeZone
-        formatter.dateFormat = "yyyy-MM-dd"
-        let dateString = formatter.string(from: date)
-        print(dateString)
-        return dateString
-    }
     
     
-    func register() {
-        class URLSessionSingleton {
-            static let shared = URLSessionSingleton()
-            let session: URLSession
-            private init() {
-                let config = URLSessionConfiguration.default
-                config.httpCookieStorage = HTTPCookieStorage.shared
-                config.httpCookieAcceptPolicy = .always
-                session = URLSession(configuration: config)
-            }
+    public func mix() {
+//        Task {
+//            await Random()
+//            await sendMail()
+//        }
+        DispatchQueue.global().async {
+            Random()
+            sendMail()
         }
+    }
+    
+//    private func Random() async {
+    private func Random() {
+        self.verify = Int.random(in: 1..<99999999)
+        print("regiest - 隨機變數為：\(self.verify)")
+    }
+    
+//    public func sendMail() async {
+    public func sendMail() {
+        let smtp = SMTP(
+            hostname: "smtp.gmail.com",     // SMTP server address
+            email: "3430yun@gmail.com",        // username to login
+            password: "knhipliavnpqxwty"            // password to login
+        )
         
-//        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
-//        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
-        let url = URL(string: "http://163.17.136.73:443/account/register.php")!
-        var request = URLRequest(url: url)
-        //        request.cachePolicy = .reloadIgnoringLocalCacheData
-        request.httpMethod = "POST"
-        let body = ["email": mail, "password": pass, "create_at": Set_date]
-        let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
-        request.httpBody = jsonData
-        URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
+        //        let megaman = Mail.User(name: "coco", email: "3430coco@gmail.com")
+        let megaman = Mail.User(name: "我習慣了使用者", email: mail)
+        let drLight = Mail.User(name: "Yun", email: "3430yun@gmail.com")
+        
+        
+        let mail = Mail(
+            from: drLight,
+            to: [megaman],
+            subject: "歡迎使用我習慣了！這是您的驗證信件",
+            text: "以下是您的驗證碼： \(String(self.verify))"
+        )
+        
+        smtp.send(mail) { (error) in
             if let error = error {
-                print("verify - Connection error: \(error)")
-            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                print("verify - HTTP error: \(httpResponse.statusCode)")
+                print("regiest - \(error)")
+            } else {
+                print("SEND: SUBJECT: \(mail.subject)")
+                print("SEND: SUBJECT: \(mail.text)")
+                //                           print("MESSAGE-ID: \(mail.messageID)")
+                print("FROM: \(mail.from)")
+                print("TO: \(mail.to)")
+                //                           print("DATE: \(mail.date)")
+                //                           print("MIME-VERSION: \(mail.mimeVersion)")
+                //                           print("SEND: \(mail.content.contentType ?? "")")
+                //                           print("CONTENT-TRANSFER-ENCODING: \(mail.content.transferEncoding ?? "")")
+                //                           print("CONTENT-DISPOSITION: \(mail.content.disposition ?? "")")
+                print("Send email successful")
+                print("---------------------------------")
             }
-            else if let data = data{
-                let decoder = JSONDecoder()
-                do {
-                    //                    確認api會印出的所有內容
-                                        print(String(data: data, encoding: .utf8)!)
-                    
-                    let userData = try decoder.decode(UserData.self, from: data)
-                    
-                    if (userData.message == "User registered successfully") {
-                        print("============== verifyView ==============")
-                        print(String(data: data, encoding: .utf8)!)
-                        print(userData)
-//                        print("使用者ID為：\(userData.userId)")
-                        print("使用者ID為：\(userData.userId ?? "N/A")")
-                        print("使用者email為：\(userData.email)")
-                        print("註冊日期為：\(userData.create_at)")
-                        print("message：\(userData.message)")
-                        UserDefaults.standard.set(true, forKey: "signIn")
-                        print("============== verifyView ==============")
-                        
-                    } else if (userData.message == "not yet filled") {
-                        print("verifyMessage：\(userData.message)")
-                        errorMessage2 = "請確認電子郵件、使用者名稱、密碼都有輸入"
-                    } else if (userData.message == "email is registered") {
-                        print("verify - Message：\(userData.message)")
-                        errorMessage2 = "電子郵件已被註冊過 請重新輸入"
-                    } else if (userData.message == "name is registered") {
-                        print("verify - Message：\(userData.message)")
-                        errorMessage2 = "使用者名稱已被註冊過 請重新輸入"
-                    } else {
-                        print("verify - Message：\(String(data: data, encoding: .utf8)!)")
-                        errorMessage2 = "註冊失敗請重新註冊"
-                    }
-                } catch {
-                    print("verify - 解碼失敗：\(error)")
-                    errorMessage2 = "註冊失敗請重新註冊"
-                }
-            }
-            // 測試
-            //            guard let data = data else {
-            //                print("No data returned from server.")
-            //                return
-            //            }
-            //            if let content = String(data: data, encoding: .utf8) {
-            //                print(content)
-            //            }
         }
-        .resume()
     }
+    
+//    func setTime() {
+//        Set_date = dateToDateString(set_date)
+//    }
+//
+//    func dateToDateString(_ date: Date) -> String {
+//        let timeZone = NSTimeZone.local
+//        let formatter = DateFormatter()
+//        formatter.timeZone = timeZone
+//        formatter.dateFormat = "yyyy-MM-dd"
+//        let dateString = formatter.string(from: date)
+//        print(dateString)
+//        return dateString
+//    }
+//
+//
+//    func register() {
+//        class URLSessionSingleton {
+//            static let shared = URLSessionSingleton()
+//            let session: URLSession
+//            private init() {
+//                let config = URLSessionConfiguration.default
+//                config.httpCookieStorage = HTTPCookieStorage.shared
+//                config.httpCookieAcceptPolicy = .always
+//                session = URLSession(configuration: config)
+//            }
+//        }
+//
+////        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
+////        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
+//        let url = URL(string: "http://163.17.136.73:443/account/register.php")!
+//        var request = URLRequest(url: url)
+//        //        request.cachePolicy = .reloadIgnoringLocalCacheData
+//        request.httpMethod = "POST"
+//        let body = ["email": mail, "password": pass, "create_at": Set_date]
+//        let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
+//        request.httpBody = jsonData
+//        URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
+//            if let error = error {
+//                print("verify - Connection error: \(error)")
+//            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+//                print("verify - HTTP error: \(httpResponse.statusCode)")
+//            }
+//            else if let data = data{
+//                let decoder = JSONDecoder()
+//                do {
+//                    //                    確認api會印出的所有內容
+//                                        print(String(data: data, encoding: .utf8)!)
+//
+//                    let userData = try decoder.decode(UserData.self, from: data)
+//
+//                    if (userData.message == "User registered successfully") {
+//                        print("============== verifyView ==============")
+//                        print(String(data: data, encoding: .utf8)!)
+//                        print(userData)
+////                        print("使用者ID為：\(userData.userId)")
+//                        print("使用者ID為：\(userData.userId ?? "N/A")")
+//                        print("使用者email為：\(userData.email)")
+//                        print("註冊日期為：\(userData.create_at)")
+//                        print("message：\(userData.message)")
+//                        UserDefaults.standard.set(true, forKey: "signIn")
+//                        print("============== verifyView ==============")
+//
+//                    } else if (userData.message == "not yet filled") {
+//                        print("verifyMessage：\(userData.message)")
+//                        errorMessage2 = "請確認電子郵件、使用者名稱、密碼都有輸入"
+//                    } else if (userData.message == "email is registered") {
+//                        print("verify - Message：\(userData.message)")
+//                        errorMessage2 = "電子郵件已被註冊過 請重新輸入"
+//                    } else if (userData.message == "name is registered") {
+//                        print("verify - Message：\(userData.message)")
+//                        errorMessage2 = "使用者名稱已被註冊過 請重新輸入"
+//                    } else {
+//                        print("verify - Message：\(String(data: data, encoding: .utf8)!)")
+//                        errorMessage2 = "註冊失敗請重新註冊"
+//                    }
+//                } catch {
+//                    print("verify - 解碼失敗：\(error)")
+//                    errorMessage2 = "註冊失敗請重新註冊"
+//                }
+//            }
+//            // 測試
+//            //            guard let data = data else {
+//            //                print("No data returned from server.")
+//            //                return
+//            //            }
+//            //            if let content = String(data: data, encoding: .utf8) {
+//            //                print(content)
+//            //            }
+//        }
+//        .resume()
+//    }
 }
 
 struct LoginView_Previews: PreviewProvider {
