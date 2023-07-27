@@ -127,13 +127,15 @@ struct AddTaskView: View {
             trailing: Button("完成") {
                 // 建立一個 Task 物件，傳入使用者輸入的 title、description 和 nextReviewDate。
 //                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
-                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
+//                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
 
                 // 將新建立的 task 加入到 taskStore 的 tasks 陣列中。
                 // 這行程式碼試圖將 task 強制轉換為 Task 類型，然後再將其添加到 taskStore.tasks 陣列中。然而，由於 task 已經是 Task 類型，所以這個強制轉換是多餘的，並不會產生任何效果。
                 //                taskStore.tasks.append(task as! Task)
 //                taskStore.tasks.append(task )
 
+                addStudySpaced()
+                
                 presentationMode.wrappedValue.dismiss()
             }
             // 如果 title 為空，按鈕會被禁用，即無法點擊。
@@ -146,10 +148,87 @@ struct AddTaskView: View {
         formatter.dateFormat = "yyyy/MM/dd"
         return formatter.string(from: date)
     }
-    
+    func formattedTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "mm:ss"
+        return formatter.string(from: date)
+    }
     func formattedInterval(_ index: Int) -> Int {
         let intervals = [1, 3, 7, 14]
         return intervals[index]
+    }
+    
+    func addStudySpaced() {
+        class URLSessionSingleton {
+            static let shared = URLSessionSingleton()
+            let session: URLSession
+            private init() {
+                let config = URLSessionConfiguration.default
+                config.httpCookieStorage = HTTPCookieStorage.shared
+                config.httpCookieAcceptPolicy = .always
+                session = URLSession(configuration: config)
+            }
+        }
+        
+//        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
+        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
+        var request = URLRequest(url: url)
+        //        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.httpMethod = "POST"
+        let body = ["title": title, "description": description, "nextReviewDate": formattedDate(nextReviewDate),"nextReviewTime": formattedTime(nextReviewTime)]
+        print("addStudySpaced - body:\(body)")
+        let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
+        request.httpBody = jsonData
+        URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("addStudySpaced - Connection error: \(error)")
+            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                print("addStudySpaced - HTTP error: \(httpResponse.statusCode)")
+            }
+            else if let data = data{
+                let decoder = JSONDecoder()
+                do {
+                    //                    確認api會印出的所有內容
+                    //                    print(String(data: data, encoding: .utf8)!)
+                    
+//                    let userData = try decoder.decode(UserData.self, from: data)
+//
+//                    if (userData.message == "User registered successfully") {
+//                        print("============== verifyView ==============")
+//                        print(String(data: data, encoding: .utf8)!)
+//                        print("regiest - userDate:\(userData)")
+//                        print("使用者ID為：\(userData.userId ?? "N/A")")
+//                        print("使用者email為：\(userData.email)")
+//                        print("註冊日期為：\(userData.create_at)")
+//                        print("message：\(userData.message)")
+//                        UserDefaults.standard.set(true, forKey: "signIn")
+//                        print("============== verifyView ==============")
+//
+//                    } else if (userData.message == "not yet filled") {
+//                        print("verifyMessage：\(userData.message)")
+//                        messenge = "請確認電子郵件、使用者名稱、密碼都有輸入"
+//                    } else if (userData.message == "email is registered") {
+//                        print("verify - Message：\(userData.message)")
+//                        messenge = "電子郵件已被註冊過 請重新輸入"
+//                    } else {
+//                        print("verify - Message：\(String(data: data, encoding: .utf8)!)")
+//                        messenge = "註冊失敗請重新註冊"
+//                    }
+//                } catch {
+//                    print("verify - 解碼失敗：\(error)")
+//                    messenge = "註冊失敗請重新註冊"
+                }
+            }
+            // 測試
+            //            guard let data = data else {
+            //                print("No data returned from server.")
+            //                return
+            //            }
+            //            if let content = String(data: data, encoding: .utf8) {
+            //                print(content)
+            //            }
+        }
+        .resume()
     }
 }
 
@@ -177,7 +256,7 @@ struct TaskDetailView: View {
 //                    .disabled(true)
             }
             
-            Section(header: Text("下一次間隔重複")) {
+            Section(header: Text("間隔學習法日程表")) {
                 ForEach(0..<4) { index in
                     HStack {
                         Toggle(isOn: $isReviewChecked[index]) {
