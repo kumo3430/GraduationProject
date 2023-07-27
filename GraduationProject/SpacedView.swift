@@ -150,7 +150,7 @@ struct AddTaskView: View {
     }
     func formattedTime(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "mm:ss"
+        formatter.dateFormat = "HH:MM"
         return formatter.string(from: date)
     }
     func formattedInterval(_ index: Int) -> Int {
@@ -170,12 +170,12 @@ struct AddTaskView: View {
             }
         }
         
-//        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
-        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
+        let url = URL(string: "http://127.0.0.1:8888/addStudySpaced.php")!
+//        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"
-        let body = ["title": title, "description": description, "nextReviewDate": formattedDate(nextReviewDate),"nextReviewTime": formattedTime(nextReviewTime)]
+        let body = ["title": title, "description": description, "nextReviewDate": formattedDate(nextReviewDate),"nextReviewTime": formattedTime(nextReviewTime),"First": formattedDate(nextReviewDates[0]),"third": formattedDate(nextReviewDates[1]),"seventh": formattedDate(nextReviewDates[2]),"fourteenth": formattedDate(nextReviewDates[3]) ]
         print("addStudySpaced - body:\(body)")
         let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
         request.httpBody = jsonData
@@ -188,8 +188,8 @@ struct AddTaskView: View {
             else if let data = data{
                 let decoder = JSONDecoder()
                 do {
-                    //                    確認api會印出的所有內容
-                    //                    print(String(data: data, encoding: .utf8)!)
+//                    確認api會印出的所有內容
+                    print(String(data: data, encoding: .utf8)!)
                     
 //                    let userData = try decoder.decode(UserData.self, from: data)
 //
