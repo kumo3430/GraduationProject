@@ -65,7 +65,7 @@ struct SpacedView: View {
                 
             },
                                 // 改1
-//                                trailing: NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
+                                //                                trailing: NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
                                 trailing: NavigationLink(destination: AddTaskView()) {
                 Image(systemName: "plus")
             }
@@ -85,13 +85,31 @@ struct SpacedView: View {
 struct AddTaskView: View {
     @Environment(\.presentationMode) var presentationMode
     // 改1
-//    @ObservedObject var taskStore: TaskStore
+    //    @ObservedObject var taskStore: TaskStore
     @State var title = ""
     @State var description = ""
     @State var nextReviewDate = Date()
     @State var nextReviewTime = Date()
+    @State var messenge = ""
+    @State var isError = false
     
-//    @State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
+    //    @State var messenge = ""
+    struct UserData : Decodable {
+        var userId: String?
+        var category_id: Int
+        var todoTitle: String
+        var todoIntroduction: String
+        var startDateTime: String
+        var reminderTime: String
+        var todo_id: String
+        var repetition1Count: String
+        var repetition2Count: String
+        var repetition3Count: String
+        var repetition4Count: String
+        var message: String
+    }
+    
+    //    @State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
     var nextReviewDates: [Date] {
         let intervals = [1, 3, 7, 14]
         return intervals.map { Calendar.current.date(byAdding: .day, value: $0, to: nextReviewDate)! }
@@ -117,6 +135,8 @@ struct AddTaskView: View {
                     }
                 }
             }
+            Text(messenge)
+                .foregroundColor(.red)
         }
         // 一個隱藏的分隔線
         .listStyle(PlainListStyle())
@@ -126,17 +146,22 @@ struct AddTaskView: View {
         .navigationBarItems(
             trailing: Button("完成") {
                 // 建立一個 Task 物件，傳入使用者輸入的 title、description 和 nextReviewDate。
-//                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
-//                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
-
+                //                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
+                //                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
+                
                 // 將新建立的 task 加入到 taskStore 的 tasks 陣列中。
                 // 這行程式碼試圖將 task 強制轉換為 Task 類型，然後再將其添加到 taskStore.tasks 陣列中。然而，由於 task 已經是 Task 類型，所以這個強制轉換是多餘的，並不會產生任何效果。
                 //                taskStore.tasks.append(task as! Task)
-//                taskStore.tasks.append(task )
-
-                addStudySpaced()
+                //                taskStore.tasks.append(task )
                 
-                presentationMode.wrappedValue.dismiss()
+                addStudySpaced()
+                if isError == true {
+                    messenge = "建立失敗，請重新建立"
+                    print(isError)
+                } else {
+                    print(isError)
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
             // 如果 title 為空，按鈕會被禁用，即無法點擊。
                 .disabled(title.isEmpty)
@@ -171,7 +196,7 @@ struct AddTaskView: View {
         }
         
         let url = URL(string: "http://127.0.0.1:8888/addStudySpaced.php")!
-//        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
+        //        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"
@@ -188,35 +213,45 @@ struct AddTaskView: View {
             else if let data = data{
                 let decoder = JSONDecoder()
                 do {
-//                    確認api會印出的所有內容
+                    //                    確認api會印出的所有內容
                     print(String(data: data, encoding: .utf8)!)
                     
-//                    let userData = try decoder.decode(UserData.self, from: data)
-//
-//                    if (userData.message == "User registered successfully") {
-//                        print("============== verifyView ==============")
-//                        print(String(data: data, encoding: .utf8)!)
-//                        print("regiest - userDate:\(userData)")
-//                        print("使用者ID為：\(userData.userId ?? "N/A")")
-//                        print("使用者email為：\(userData.email)")
-//                        print("註冊日期為：\(userData.create_at)")
-//                        print("message：\(userData.message)")
-//                        UserDefaults.standard.set(true, forKey: "signIn")
-//                        print("============== verifyView ==============")
-//
-//                    } else if (userData.message == "not yet filled") {
-//                        print("verifyMessage：\(userData.message)")
-//                        messenge = "請確認電子郵件、使用者名稱、密碼都有輸入"
-//                    } else if (userData.message == "email is registered") {
-//                        print("verify - Message：\(userData.message)")
-//                        messenge = "電子郵件已被註冊過 請重新輸入"
-//                    } else {
-//                        print("verify - Message：\(String(data: data, encoding: .utf8)!)")
-//                        messenge = "註冊失敗請重新註冊"
-//                    }
-//                } catch {
-//                    print("verify - 解碼失敗：\(error)")
-//                    messenge = "註冊失敗請重新註冊"
+                    let userData = try decoder.decode(UserData.self, from: data)
+                    
+                    if (userData.message == "User New StudySpaced successfully") {
+                        print("============== verifyView ==============")
+                        print(String(data: data, encoding: .utf8)!)
+                        print("regiest - userDate:\(userData)")
+                        print("使用者ID為：\(userData.userId ?? "N/A")")
+                        print("事件種類為：\(userData.category_id)")
+                        print("事件名稱為：\(userData.todoTitle)")
+                        print("事件簡介為：\(userData.todoIntroduction)")
+                        print("開始時間為：\(userData.startDateTime)")
+                        print("提醒時間為：\(userData.reminderTime)")
+                        print("事件編號為：\(userData.todo_id)")
+                        print("第一次間隔重複時間為：\(userData.repetition1Count)")
+                        print("第二次間隔重複時間為：\(userData.repetition2Count)")
+                        print("第三次間隔重複時間為：\(userData.repetition3Count)")
+                        print("第四次間隔重複時間為：\(userData.repetition4Count)")
+                        print("addStudySpaced - message：\(userData.message)")
+                        print("============== verifyView ==============")
+                    } else if (userData.message == "The Todo is repeated") {
+                        isError = true
+                        print("addStudySpaced - message：\(userData.message)")
+                        messenge = "已建立過，請重新建立"
+                    } else if (userData.message == "New Todo - Error: <br>Incorrect integer value: '' for column 'uid' at row 1") {
+                        isError = true
+                        print("addStudySpaced - message：\(userData.message)")
+                        messenge = "請重新登入"
+                    } else  {
+                        isError = true
+                        print("addStudySpaced - message：\(userData.message)")
+                        messenge = "建立失敗，請重新建立"
+                    }
+                } catch {
+                    isError = true
+                    print("addStudySpaced - 解碼失敗：\(error)")
+                    messenge = "建立失敗，請重新建立"
                 }
             }
             // 測試
@@ -253,7 +288,7 @@ struct TaskDetailView: View {
             
             Section(header: Text("提醒時間")) {
                 DatePicker("", selection: $task.nextReviewTime, displayedComponents: [.hourAndMinute])
-//                    .disabled(true)
+                //                    .disabled(true)
             }
             
             Section(header: Text("間隔學習法日程表")) {

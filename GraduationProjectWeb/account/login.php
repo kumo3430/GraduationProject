@@ -36,7 +36,6 @@ if (mysqli_num_rows($result) > 0) {
         while ($row = $result->fetch_assoc()) {
             $_SESSION['uid'] = $row['id'];
             $uid = $row['id'];
-
             $userData = array(
                 'id' => $uid,
                 'email' => $row["email"],
