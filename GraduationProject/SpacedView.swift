@@ -14,15 +14,16 @@ struct Task: Identifiable {
     var title: String
     var description: String
     var nextReviewDate: Date
+    var nextReviewTime: Date
 }
 
 // 任務存儲類別，用於存儲和管理任務列表
 class TaskStore: ObservableObject {
     // 具有一個已發佈的 tasks 屬性，該屬性存儲任務的數組
     @Published var tasks: [Task] = [
-        Task(title: "英文", description: "背L2單字", nextReviewDate: Date()),
-        Task(title: "國文", description: "燭之武退秦師", nextReviewDate: Date()),
-        Task(title: "歷史", description: "中世紀歐洲", nextReviewDate: Date())
+        Task(title: "英文", description: "背L2單字", nextReviewDate: Date(), nextReviewTime: Date()),
+        Task(title: "國文", description: "燭之武退秦師", nextReviewDate: Date(), nextReviewTime: Date()),
+        Task(title: "歷史", description: "中世紀歐洲", nextReviewDate: Date(), nextReviewTime: Date())
     ]
     // 根據日期返回相應的任務列表
     func tasksForDate(_ date: Date) -> [Task] {
@@ -126,7 +127,7 @@ struct AddTaskView: View {
             trailing: Button("完成") {
                 // 建立一個 Task 物件，傳入使用者輸入的 title、description 和 nextReviewDate。
 //                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
-                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
+                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
 
                 // 將新建立的 task 加入到 taskStore 的 tasks 陣列中。
                 // 這行程式碼試圖將 task 強制轉換為 Task 類型，然後再將其添加到 taskStore.tasks 陣列中。然而，由於 task 已經是 Task 類型，所以這個強制轉換是多餘的，並不會產生任何效果。
@@ -171,9 +172,9 @@ struct TaskDetailView: View {
                 TextField("輸入內容", text: $task.description)
             }
             
-            Section(header: Text("開始時間")) {
-                DatePicker("", selection: $task.nextReviewDate, displayedComponents: [.date, .hourAndMinute])
-                    .disabled(true)
+            Section(header: Text("提醒時間")) {
+                DatePicker("", selection: $task.nextReviewTime, displayedComponents: [.hourAndMinute])
+//                    .disabled(true)
             }
             
             Section(header: Text("下一次間隔重複")) {
