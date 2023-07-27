@@ -88,6 +88,13 @@ struct AddTaskView: View {
     @State var title = ""
     @State var description = ""
     @State var nextReviewDate = Date()
+    @State var nextReviewTime = Date()
+    
+//    @State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
+    var nextReviewDates: [Date] {
+        let intervals = [1, 3, 7, 14]
+        return intervals.map { Calendar.current.date(byAdding: .day, value: $0, to: nextReviewDate)! }
+    }
     
     var body: some View {
         Form {
@@ -99,7 +106,15 @@ struct AddTaskView: View {
                 TextField("輸入內容", text: $description)
             }
             Section(header: Text("開始時間").textCase(nil)) {
-                DatePicker("選擇時間", selection: $nextReviewDate, displayedComponents: [.date, .hourAndMinute])
+                DatePicker("選擇時間", selection: $nextReviewDate, displayedComponents: [.date])
+                DatePicker("提醒時間", selection: $nextReviewTime, displayedComponents: [.hourAndMinute])
+            }
+            Section(header: Text("間隔學習法日程表")) {
+                ForEach(0..<4) { index in
+                    HStack {
+                        Text("第\(formattedInterval(index))天： \(formattedDate(nextReviewDates[index]))")
+                    }
+                }
             }
         }
         // 一個隱藏的分隔線
@@ -110,17 +125,30 @@ struct AddTaskView: View {
         .navigationBarItems(
             trailing: Button("完成") {
                 // 建立一個 Task 物件，傳入使用者輸入的 title、description 和 nextReviewDate。
+//                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
                 let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
+
                 // 將新建立的 task 加入到 taskStore 的 tasks 陣列中。
                 // 這行程式碼試圖將 task 強制轉換為 Task 類型，然後再將其添加到 taskStore.tasks 陣列中。然而，由於 task 已經是 Task 類型，所以這個強制轉換是多餘的，並不會產生任何效果。
                 //                taskStore.tasks.append(task as! Task)
 //                taskStore.tasks.append(task )
-                // ????
+
                 presentationMode.wrappedValue.dismiss()
             }
             // 如果 title 為空，按鈕會被禁用，即無法點擊。
                 .disabled(title.isEmpty)
         )
+    }
+    
+    func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd"
+        return formatter.string(from: date)
+    }
+    
+    func formattedInterval(_ index: Int) -> Int {
+        let intervals = [1, 3, 7, 14]
+        return intervals[index]
     }
 }
 
@@ -166,7 +194,7 @@ struct TaskDetailView: View {
     
     func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
+        formatter.dateFormat = "yyyy/MM/dd"
         return formatter.string(from: date)
     }
     
