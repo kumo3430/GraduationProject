@@ -63,7 +63,9 @@ struct SpacedView: View {
                 }
                 
             },
-                                trailing: NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
+                                // 改1
+//                                trailing: NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
+                                trailing: NavigationLink(destination: AddTaskView()) {
                 Image(systemName: "plus")
             }
             )
@@ -81,7 +83,8 @@ struct SpacedView: View {
 // 右上角 新增的button
 struct AddTaskView: View {
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var taskStore: TaskStore
+    // 改1
+//    @ObservedObject var taskStore: TaskStore
     @State var title = ""
     @State var description = ""
     @State var nextReviewDate = Date()
@@ -111,7 +114,7 @@ struct AddTaskView: View {
                 // 將新建立的 task 加入到 taskStore 的 tasks 陣列中。
                 // 這行程式碼試圖將 task 強制轉換為 Task 類型，然後再將其添加到 taskStore.tasks 陣列中。然而，由於 task 已經是 Task 類型，所以這個強制轉換是多餘的，並不會產生任何效果。
                 //                taskStore.tasks.append(task as! Task)
-                taskStore.tasks.append(task )
+//                taskStore.tasks.append(task )
                 // ????
                 presentationMode.wrappedValue.dismiss()
             }
@@ -180,6 +183,8 @@ struct TaskDetailView: View {
 
 struct SpacedView_Previews: PreviewProvider {
     static var previews: some View {
+        // 改1
         SpacedView()
+        AddTaskView()
     }
 }

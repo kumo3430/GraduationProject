@@ -230,8 +230,8 @@ struct Login : View {
         }
 
 //        let url = URL(string: "http://127.0.0.1:8888/account/login.php")!
-//        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
-        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
+        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
+//        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"
@@ -295,6 +295,7 @@ struct SignUp : View {
     @State var set_date: Date = Date()
     @State var Set_date: String = ""
     @State private var isShowingVerifyRegister = false
+    @State private var isSendingMail = false
 
     struct UserData : Decodable {
         var userId: String?
@@ -404,16 +405,14 @@ struct SignUp : View {
             
             Button(action: {
                 // 我要輸入註冊的function
-//                if mail.isEmpty || pass.isEmpty || repass.isEmpty {
-//                    errorMessage2 = "請確認帳號密碼都有輸入"
-//                } else {
-//                    setTime()
-//                    register()
-//                }
-                mix()
-                isShowingVerifyRegister = true
-
-//                verifyRegister(verify: $verify, mail: $mail, pass: $pass)
+                if mail.isEmpty || pass.isEmpty || repass.isEmpty {
+                    errorMessage2 = "請確認帳號密碼都有輸入"
+                } else {
+                    if !isSendingMail { // 避免重複發送郵件
+                        mix()
+                    }
+                    isShowingVerifyRegister = true
+                }
             }) {
                 Text("SIGNUP")
                     .foregroundColor(.white)
@@ -428,17 +427,8 @@ struct SignUp : View {
             .padding(.bottom, -40)
             .shadow(radius: 15)
             .sheet(isPresented: $isShowingVerifyRegister) {
-                           verifyRegister(verify: $verify, mail: $mail, pass: $pass)
-                       }
-//            .background(
-//                NavigationLink(
-//                    destination: verifyRegister(verify: $verify, mail: $mail, pass: $pass),
-//                    label: {
-//                        Text("註冊")
-//                    }
-//                )
-//
-//            )
+                verifyRegister(verify: $verify, mail: $mail, pass: $pass)
+            }
         }
     }
     
@@ -462,6 +452,7 @@ struct SignUp : View {
     
 //    public func sendMail() async {
     public func sendMail() {
+        isSendingMail = true
         let smtp = SMTP(
             hostname: "smtp.gmail.com",     // SMTP server address
             email: "3430yun@gmail.com",        // username to login
@@ -469,6 +460,7 @@ struct SignUp : View {
         )
         
         //        let megaman = Mail.User(name: "coco", email: "3430coco@gmail.com")
+        print("mail:\(mail)")
         let megaman = Mail.User(name: "我習慣了使用者", email: mail)
         let drLight = Mail.User(name: "Yun", email: "3430yun@gmail.com")
         
@@ -482,8 +474,10 @@ struct SignUp : View {
         
         smtp.send(mail) { (error) in
             if let error = error {
+                isSendingMail = false
                 print("regiest - \(error)")
             } else {
+                isSendingMail = true
                 print("SEND: SUBJECT: \(mail.subject)")
                 print("SEND: SUBJECT: \(mail.text)")
                 //                           print("MESSAGE-ID: \(mail.messageID)")
@@ -499,98 +493,6 @@ struct SignUp : View {
             }
         }
     }
-    
-//    func setTime() {
-//        Set_date = dateToDateString(set_date)
-//    }
-//
-//    func dateToDateString(_ date: Date) -> String {
-//        let timeZone = NSTimeZone.local
-//        let formatter = DateFormatter()
-//        formatter.timeZone = timeZone
-//        formatter.dateFormat = "yyyy-MM-dd"
-//        let dateString = formatter.string(from: date)
-//        print(dateString)
-//        return dateString
-//    }
-//
-//
-//    func register() {
-//        class URLSessionSingleton {
-//            static let shared = URLSessionSingleton()
-//            let session: URLSession
-//            private init() {
-//                let config = URLSessionConfiguration.default
-//                config.httpCookieStorage = HTTPCookieStorage.shared
-//                config.httpCookieAcceptPolicy = .always
-//                session = URLSession(configuration: config)
-//            }
-//        }
-//
-////        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
-////        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
-//        let url = URL(string: "http://163.17.136.73:443/account/register.php")!
-//        var request = URLRequest(url: url)
-//        //        request.cachePolicy = .reloadIgnoringLocalCacheData
-//        request.httpMethod = "POST"
-//        let body = ["email": mail, "password": pass, "create_at": Set_date]
-//        let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
-//        request.httpBody = jsonData
-//        URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
-//            if let error = error {
-//                print("verify - Connection error: \(error)")
-//            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-//                print("verify - HTTP error: \(httpResponse.statusCode)")
-//            }
-//            else if let data = data{
-//                let decoder = JSONDecoder()
-//                do {
-//                    //                    確認api會印出的所有內容
-//                                        print(String(data: data, encoding: .utf8)!)
-//
-//                    let userData = try decoder.decode(UserData.self, from: data)
-//
-//                    if (userData.message == "User registered successfully") {
-//                        print("============== verifyView ==============")
-//                        print(String(data: data, encoding: .utf8)!)
-//                        print(userData)
-////                        print("使用者ID為：\(userData.userId)")
-//                        print("使用者ID為：\(userData.userId ?? "N/A")")
-//                        print("使用者email為：\(userData.email)")
-//                        print("註冊日期為：\(userData.create_at)")
-//                        print("message：\(userData.message)")
-//                        UserDefaults.standard.set(true, forKey: "signIn")
-//                        print("============== verifyView ==============")
-//
-//                    } else if (userData.message == "not yet filled") {
-//                        print("verifyMessage：\(userData.message)")
-//                        errorMessage2 = "請確認電子郵件、使用者名稱、密碼都有輸入"
-//                    } else if (userData.message == "email is registered") {
-//                        print("verify - Message：\(userData.message)")
-//                        errorMessage2 = "電子郵件已被註冊過 請重新輸入"
-//                    } else if (userData.message == "name is registered") {
-//                        print("verify - Message：\(userData.message)")
-//                        errorMessage2 = "使用者名稱已被註冊過 請重新輸入"
-//                    } else {
-//                        print("verify - Message：\(String(data: data, encoding: .utf8)!)")
-//                        errorMessage2 = "註冊失敗請重新註冊"
-//                    }
-//                } catch {
-//                    print("verify - 解碼失敗：\(error)")
-//                    errorMessage2 = "註冊失敗請重新註冊"
-//                }
-//            }
-//            // 測試
-//            //            guard let data = data else {
-//            //                print("No data returned from server.")
-//            //                return
-//            //            }
-//            //            if let content = String(data: data, encoding: .utf8) {
-//            //                print(content)
-//            //            }
-//        }
-//        .resume()
-//    }
 }
 
 struct LoginView_Previews: PreviewProvider {
