@@ -52,7 +52,7 @@ if (mysqli_num_rows($result) > 0) {
     // 登錄失敗
     $userData = array(
         'id' => "null",
-        'userName' => "null",
+        'email' => "null",
         'message' => "no such account"
     );
     // $userData = array('message' => "no such account");

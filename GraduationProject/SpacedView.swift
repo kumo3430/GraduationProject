@@ -135,14 +135,10 @@ struct AddTaskView: View {
                     }
                 }
             }
-            Text(messenge)
-                .foregroundColor(.red)
         }
         // 一個隱藏的分隔線
         .listStyle(PlainListStyle())
         .navigationBarTitle("新增任務")
-        // ！！！！！
-        // 我需要把上面的那些欄位透過這個按鈕寫進資料庫裡面
         .navigationBarItems(
             trailing: Button("完成") {
                 // 建立一個 Task 物件，傳入使用者輸入的 title、description 和 nextReviewDate。
@@ -155,17 +151,12 @@ struct AddTaskView: View {
                 //                taskStore.tasks.append(task )
                 
                 addStudySpaced()
-                if isError == true {
-                    messenge = "建立失敗，請重新建立"
-                    print(isError)
-                } else {
-                    print(isError)
-                    presentationMode.wrappedValue.dismiss()
-                }
             }
             // 如果 title 為空，按鈕會被禁用，即無法點擊。
                 .disabled(title.isEmpty)
         )
+        Text(messenge)
+            .foregroundColor(.red)
     }
     
     func formattedDate(_ date: Date) -> String {
@@ -234,6 +225,11 @@ struct AddTaskView: View {
                         print("第三次間隔重複時間為：\(userData.repetition3Count)")
                         print("第四次間隔重複時間為：\(userData.repetition4Count)")
                         print("addStudySpaced - message：\(userData.message)")
+                        DispatchQueue.main.async {
+                            isError = false
+                            // 如果沒有錯才可以關閉視窗
+                            presentationMode.wrappedValue.dismiss()
+                        }
                         print("============== verifyView ==============")
                     } else if (userData.message == "The Todo is repeated") {
                         isError = true
@@ -242,7 +238,7 @@ struct AddTaskView: View {
                     } else if (userData.message == "New Todo - Error: <br>Incorrect integer value: '' for column 'uid' at row 1") {
                         isError = true
                         print("addStudySpaced - message：\(userData.message)")
-                        messenge = "請重新登入"
+                        messenge = "登入出錯 請重新登入"
                     } else  {
                         isError = true
                         print("addStudySpaced - message：\(userData.message)")

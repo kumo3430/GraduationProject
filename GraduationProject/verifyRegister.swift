@@ -185,8 +185,8 @@ struct verifyRegister: View {
             }
         }
         
-//        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
-        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
+        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
+//        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"

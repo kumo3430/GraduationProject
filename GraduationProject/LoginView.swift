@@ -125,9 +125,9 @@ struct Login : View {
     @Binding var errorMessage1: String
     @State var isPasswordVisible = false
     struct UserData: Decodable {
-        var id: String
-        var email: String
-        var message: String
+        var id: String?
+        var email: String?
+        var message: String?
     }
     
     var body : some View{
@@ -268,6 +268,7 @@ struct Login : View {
                     }
                 } catch {
                     print("解碼失敗：\(error)")
+                    errorMessage1 = "登入有誤"
                 }
             }
             // 測試
