@@ -10,7 +10,7 @@ import SwiftUI
 struct MainView: View {
     var body: some View {
         TabView {
-            SpacedView()
+            SpacedView(ReviewChecked0: false, ReviewChecked1: false, ReviewChecked2: false, ReviewChecked3: false)
                 .tabItem {
                     Image(systemName: "house")
                     Text("首頁")

@@ -17,6 +17,10 @@ struct Task: Identifiable {
     //    var nextReviewTime: Date
     var nextReviewDate: Date
     var nextReviewTime: Date
+    var isReviewChecked0: Bool
+    var isReviewChecked1: Bool
+    var isReviewChecked2: Bool
+    var isReviewChecked3: Bool
 }
 
 struct UserData: Decodable {
@@ -26,13 +30,21 @@ struct UserData: Decodable {
     var todoIntroduction: [String]
     var startDateTime: [String]
     var reminderTime: [String]
+    var repetition1Status: [String?]
+    var repetition2Status: [String?]
+    var repetition3Status: [String?]
+    var repetition4Status: [String?]
     var message: String
 }
 
 // 任務存儲類別，用於存儲和管理任務列表
 class TaskStore: ObservableObject {
     // 具有一個已發佈的 tasks 屬性，該屬性存儲任務的數組
-    @Published var tasks: [Task] = []
+    @Published var tasks: [Task] = [
+        Task(title: "英文", description: "背L2單字", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: true, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false),
+        Task(title: "國文", description: "燭之武退秦師", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: true, isReviewChecked2: false, isReviewChecked3: false),
+        Task(title: "歷史", description: "中世紀歐洲", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: true)
+    ]
     // 根據日期返回相應的任務列表
     func tasksForDate(_ date: Date) -> [Task] {
         return tasks
@@ -42,6 +54,10 @@ class TaskStore: ObservableObject {
 struct SpacedView: View {
     // 用於觀察任務存儲的屬性，當任務存儲的 tasks 屬性發生變化時，將自動刷新視圖。
     @ObservedObject var taskStore = TaskStore()
+    @State var ReviewChecked0: Bool
+    @State var ReviewChecked1: Bool
+    @State var ReviewChecked2: Bool
+    @State var ReviewChecked3: Bool
     
     var body: some View {
         NavigationView {
@@ -148,7 +164,28 @@ struct SpacedView: View {
                         for index in userData.todoTitle.indices {
                             if let startDate = convertToDate(userData.startDateTime[index]),
                                let reminderTime = convertToTime(userData.reminderTime[index]) {
-                                let task = Task(title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime)
+                                
+                                if (userData.repetition1Status[index] == "0" ){
+                                    ReviewChecked0 = false
+                                } else {
+                                    ReviewChecked0 = true
+                                }
+                                if (userData.repetition2Status[index] == "0" ){
+                                    ReviewChecked1 = false
+                                } else {
+                                    ReviewChecked1 = true
+                                }
+                                if (userData.repetition3Status[index] == "0" ){
+                                    ReviewChecked2 = false
+                                } else {
+                                    ReviewChecked2 = true
+                                }
+                                if (userData.repetition4Status[index] == "0" ){
+                                    ReviewChecked3 = false
+                                } else {
+                                    ReviewChecked3 = true
+                                }
+                                let task = Task(title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
                                 DispatchQueue.main.async {
                                      taskStore.tasks.append(task)
                                  }
@@ -232,21 +269,11 @@ struct AddTaskView: View {
         .listStyle(PlainListStyle())
         .navigationBarTitle("新增任務")
         .navigationBarItems(
-            trailing: Button("完成") {
-                // 建立一個 Task 物件，傳入使用者輸入的 title、description 和 nextReviewDate。
-                //                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate)
-                //                let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
-                
-                // 將新建立的 task 加入到 taskStore 的 tasks 陣列中。
-                // 這行程式碼試圖將 task 強制轉換為 Task 類型，然後再將其添加到 taskStore.tasks 陣列中。然而，由於 task 已經是 Task 類型，所以這個強制轉換是多餘的，並不會產生任何效果。
-                //                taskStore.tasks.append(task as! Task)
-                //                taskStore.tasks.append(task )
-                
-                addStudySpaced()
-            }
+            trailing: Button("完成") { addStudySpaced() }
             // 如果 title 為空，按鈕會被禁用，即無法點擊。
                 .disabled(title.isEmpty)
         )
+        
         Text(messenge)
             .foregroundColor(.red)
     }
@@ -298,9 +325,7 @@ struct AddTaskView: View {
                 do {
                     //                    確認api會印出的所有內容
                     print(String(data: data, encoding: .utf8)!)
-                    
                     let userData = try decoder.decode(UserData.self, from: data)
-                    
                     if (userData.message == "User New StudySpaced successfully") {
                         print("============== verifyView ==============")
                         print(String(data: data, encoding: .utf8)!)
@@ -319,8 +344,8 @@ struct AddTaskView: View {
                         print("addStudySpaced - message：\(userData.message)")
                         DispatchQueue.main.async {
                             isError = false
-                            // 如果沒有錯才可以關閉視窗
-                            let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
+                            // 如果沒有錯才可以關閉視窗並且把此次東西暫存起來
+                            let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime, isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false)
                             taskStore.tasks.append(task)
                             presentationMode.wrappedValue.dismiss()
                         }
@@ -358,8 +383,12 @@ struct AddTaskView: View {
 }
 
 struct TaskDetailView: View {
+    @ObservedObject var taskStore = TaskStore()
     @State var task: Task
-    @State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
+//    @State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
+    @State var title = ""
+    @State var description = ""
+    @State var nextReviewTime = Date()
     
     var nextReviewDates: [Date] {
         let intervals = [1, 3, 7, 14]
@@ -370,23 +399,47 @@ struct TaskDetailView: View {
         Form {
             Section(header: Text("標題")) {
                 TextField("輸入標題", text: $task.title)
+                    .onChange(of: task.title) { newValue in
+                        title = task.title
+                        print("New title : \(title)")
+                    }
             }
             Section(header: Text("內容")) {
                 TextField("輸入內容", text: $task.description)
+                    .onChange(of: task.description) { newValue in
+                        description = task.description
+                        print("New description : \(description)")
+                    }
             }
-            
             Section(header: Text("提醒時間")) {
                 DatePicker("開始時間", selection: $task.nextReviewDate, displayedComponents: [.date])
                     .disabled(true)
                 DatePicker("提醒時間", selection: $task.nextReviewTime, displayedComponents: [.hourAndMinute])
-                //                    .disabled(true)
+                    .onChange(of: task.nextReviewTime) { newValue in
+                        nextReviewTime = task.nextReviewTime
+                        print("New nextReviewTime : \(nextReviewTime)")
+                    }
             }
-            
             Section(header: Text("間隔學習法日程表")) {
-                ForEach(0..<4) { index in
-                    HStack {
-                        Toggle(isOn: $isReviewChecked[index]) {
-                            Text("第\(formattedInterval(index))天： \(formattedDate(nextReviewDates[index]))")
+                VStack {
+                    HStack{
+                        Toggle(isOn: $task.isReviewChecked0) {
+                            Text("第\(formattedInterval(0))天： \(formattedDate(nextReviewDates[0]))")
+                        }
+                    }
+                    HStack{
+                        Toggle(isOn: $task.isReviewChecked1) {
+                            Text("第\(formattedInterval(1))天： \(formattedDate(nextReviewDates[1]))")
+                        }
+                    }
+                        HStack{
+                            Toggle(isOn: $task.isReviewChecked2) {
+                                Text("第\(formattedInterval(2))天： \(formattedDate(nextReviewDates[2]))")
+                        }
+                    }
+                    HStack{
+                        Toggle(isOn: $task.isReviewChecked3) {
+                            Text("第\(formattedInterval(3))天： \(formattedDate(nextReviewDates[3]))")
                         }
                     }
                 }
@@ -417,6 +470,6 @@ struct TaskDetailView: View {
 
 struct SpacedView_Previews: PreviewProvider {
     static var previews: some View {
-        SpacedView()
+        SpacedView(ReviewChecked0: false, ReviewChecked1: false, ReviewChecked2: false, ReviewChecked3: false)
     }
 }

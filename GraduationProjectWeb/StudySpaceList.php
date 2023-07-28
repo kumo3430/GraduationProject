@@ -13,6 +13,10 @@ $TodoTitle = array();
 $TodoIntroduction = array();
 $StartDateTime = array();
 $ReminderTime = array();
+$repetition1Status = array();
+$repetition2Status = array();
+$repetition3Status = array();
+$repetition4Status = array();
 
 $servername = "localhost"; // 資料庫伺服器名稱
 $user = "kumo"; // 資料庫使用者名稱
@@ -27,7 +31,8 @@ if ($conn->connect_error) {
 }
 
 // $TodoSELSql = "SELECT * FROM Todo WHERE uid = '$uid' && category_id = '1';";
-$TodoSELSql = "SELECT * FROM Todo WHERE uid = '30' && category_id = '1';";
+// $TodoSELSql = "SELECT * FROM Todo WHERE uid = '30' && category_id = '1';";
+$TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '30' && category_id = '1';";
 
 $result = $conn->query($TodoSELSql);
 if ($result->num_rows > 0) {
@@ -36,6 +41,10 @@ if ($result->num_rows > 0) {
         $TodoIntroduction[] = $row['todoIntroduction'];
         $StartDateTime[] = $row['startDateTime'];
         $ReminderTime[] = $row['reminderTime'];
+        $repetition1Status[] = $row['repetition1Status'];
+        $repetition2Status[] = $row['repetition2Status'];
+        $repetition3Status[] = $row['repetition3Status'];
+        $repetition4Status[] = $row['repetition4Status'];
     }
     $userData = array(
         'userId' => $uid,
@@ -44,6 +53,10 @@ if ($result->num_rows > 0) {
         'todoIntroduction' => $TodoIntroduction,
         'startDateTime' => $StartDateTime,
         'reminderTime' => $ReminderTime,
+        'repetition1Status' => $repetition1Status,
+        'repetition2Status' => $repetition2Status,
+        'repetition3Status' => $repetition3Status,
+        'repetition4Status' => $repetition4Status,
         'message' => ""
     );
     echo json_encode($userData);
