@@ -19,15 +19,6 @@ struct Task: Identifiable {
     var nextReviewTime: Date
 }
 
-//struct UserData : Decodable {
-//    var userId: String?
-//    var category_id: Int
-//    var todoTitle: String
-//    var todoIntroduction: String
-//    var startDateTime: String
-//    var reminderTime: String
-//    var message: String
-//}
 struct UserData: Decodable {
     var userId: String?
     var category_id: Int
@@ -38,21 +29,14 @@ struct UserData: Decodable {
     var message: String
 }
 
-
 // 任務存儲類別，用於存儲和管理任務列表
 class TaskStore: ObservableObject {
     // 具有一個已發佈的 tasks 屬性，該屬性存儲任務的數組
-    @Published var tasks: [Task] = [
-        Task(title: "英文", description: "背L2單字", nextReviewDate: Date(), nextReviewTime: Date()),
-        Task(title: "國文", description: "燭之武退秦師", nextReviewDate: Date(), nextReviewTime: Date()),
-        Task(title: "歷史", description: "中世紀歐洲", nextReviewDate: Date(), nextReviewTime: Date())
-    ]
+    @Published var tasks: [Task] = []
     // 根據日期返回相應的任務列表
     func tasksForDate(_ date: Date) -> [Task] {
-        //        return tasks.filter { Calendar.current.isDate($0.nextReviewDate, inSameDayAs: date) }
         return tasks
     }
-    
 }
 
 struct SpacedView: View {
@@ -99,12 +83,11 @@ struct SpacedView: View {
     // 用於將日期格式化為指定的字符串格式
     func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
+        formatter.dateFormat = "yyyy/MM/dd"
         return formatter.string(from: date)
     }
     
     private func StudySpaceList() {
-        
         class URLSessionSingleton {
             static let shared = URLSessionSingleton()
             let session: URLSession
@@ -120,7 +103,6 @@ struct SpacedView: View {
         //        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
         //        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
         var request = URLRequest(url: url)
-        //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"
         let body : [String: Any]  = [:]
         let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
@@ -150,6 +132,7 @@ struct SpacedView: View {
                         print("startDateTime為：\(userData.startDateTime)")
                         print("reminderTime為：\(userData.reminderTime)")
                         
+                        // 先將日期和時間字串轉換成對應的 Date 物件
                         func convertToDate(_ dateString: String) -> Date? {
                             let dateFormatter = DateFormatter()
                             dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -162,16 +145,6 @@ struct SpacedView: View {
                             return dateFormatter.date(from: timeString)
                         }
                         
-                        // 先將日期和時間字串轉換成對應的 Date 物件
-                        //                        if let startDate = convertToDate(userData.startDateTime),
-                        //                           let reminderTime = convertToTime(userData.reminderTime) {
-                        //
-                        //                            // 使用轉換後的日期和時間來創建 Task 物件
-                        //                            let task = Task(title: userData.todoTitle, description: userData.todoIntroduction, nextReviewDate: startDate, nextReviewTime: reminderTime)
-                        //                            print("task:\(task)")
-                        //                            // 將 Task 加入到 taskStore 的 tasks 陣列中
-                        //                            taskStore.tasks.append(task)
-                        
                         for index in userData.todoTitle.indices {
                             if let startDate = convertToDate(userData.startDateTime[index]),
                                let reminderTime = convertToTime(userData.reminderTime[index]) {
@@ -183,6 +156,7 @@ struct SpacedView: View {
                                 print("日期或時間轉換失敗")
                             }
                         }
+                        print("============== SpecedView ==============")
                     }
                 } catch {
                     print("SoacedList - 解碼失敗：\(error)")
@@ -204,7 +178,6 @@ struct SpacedView: View {
 // 右上角 新增的button
 struct AddTaskView: View {
     @Environment(\.presentationMode) var presentationMode
-    // 改1
     @ObservedObject var taskStore: TaskStore
     @State var title = ""
     @State var description = ""
@@ -213,7 +186,6 @@ struct AddTaskView: View {
     @State var messenge = ""
     @State var isError = false
     
-    //    @State var messenge = ""
     struct UserData : Decodable {
         var userId: String?
         var category_id: Int
@@ -388,7 +360,6 @@ struct AddTaskView: View {
 struct TaskDetailView: View {
     @State var task: Task
     @State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
-    
     
     var nextReviewDates: [Date] {
         let intervals = [1, 3, 7, 14]
