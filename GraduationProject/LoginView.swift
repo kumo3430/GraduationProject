@@ -125,9 +125,9 @@ struct Login : View {
     @Binding var errorMessage1: String
     @State var isPasswordVisible = false
     struct UserData: Decodable {
-        var id: String?
-        var email: String?
-        var message: String?
+        var id: String
+        var email: String
+        var message: String
     }
     
     var body : some View{

@@ -13,9 +13,31 @@ struct Task: Identifiable {
     let id = UUID()
     var title: String
     var description: String
+    //    var nextReviewDate: Date
+    //    var nextReviewTime: Date
     var nextReviewDate: Date
     var nextReviewTime: Date
 }
+
+//struct UserData : Decodable {
+//    var userId: String?
+//    var category_id: Int
+//    var todoTitle: String
+//    var todoIntroduction: String
+//    var startDateTime: String
+//    var reminderTime: String
+//    var message: String
+//}
+struct UserData: Decodable {
+    var userId: String?
+    var category_id: Int
+    var todoTitle: [String]
+    var todoIntroduction: [String]
+    var startDateTime: [String]
+    var reminderTime: [String]
+    var message: String
+}
+
 
 // 任務存儲類別，用於存儲和管理任務列表
 class TaskStore: ObservableObject {
@@ -56,16 +78,21 @@ struct SpacedView: View {
             }
             .listStyle(PlainListStyle())
             .navigationBarTitle("間隔重複")
-            .navigationBarItems(leading:
-                                    Button {
-                UserDefaults.standard.set(false, forKey: "signIn")
-            } label: {
-                Image(systemName: "person.badge.minus")
-            }, trailing:
-                                    NavigationLink(destination: AddTaskView()) {
-                Image(systemName: "plus")
-            }
+            .navigationBarItems(
+                leading:
+                    Button {
+                        UserDefaults.standard.set(false, forKey: "signIn")
+                    } label: {
+                        Image(systemName: "person.badge.minus")
+                    },
+                trailing:
+                    NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
+                        Image(systemName: "plus")
+                    }
             )
+        }
+        .onAppear() {
+            StudySpaceList()
         }
     }
     
@@ -75,13 +102,110 @@ struct SpacedView: View {
         formatter.dateFormat = "yyyy/MM/dd HH:mm"
         return formatter.string(from: date)
     }
+    
+    private func StudySpaceList() {
+        
+        class URLSessionSingleton {
+            static let shared = URLSessionSingleton()
+            let session: URLSession
+            private init() {
+                let config = URLSessionConfiguration.default
+                config.httpCookieStorage = HTTPCookieStorage.shared
+                config.httpCookieAcceptPolicy = .always
+                session = URLSession(configuration: config)
+            }
+        }
+        
+        let url = URL(string: "http://127.0.0.1:8888/StudySpaceList.php")!
+        //        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
+        //        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
+        var request = URLRequest(url: url)
+        //        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.httpMethod = "POST"
+        let body : [String: Any]  = [:]
+        let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
+        request.httpBody = jsonData
+        URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Connection error: \(error)")
+            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                print("HTTP error: \(httpResponse.statusCode)")
+            }
+            else if let data = data{
+                let decoder = JSONDecoder()
+                do {
+                    print(String(data: data, encoding: .utf8)!)
+                    let userData = try decoder.decode(UserData.self, from: data)
+                    if userData.message == "no such account" {
+                        print("============== SpecedView ==============")
+                        print("SoacedList - userDate:\(userData)")
+                        print(userData.message)
+                        print("SoacedList顯示有問題")
+                        print("============== SpecedView ==============")
+                    } else {
+                        print("============== SpecedView ==============")
+                        print("SoacedList - userDate:\(userData)")
+                        print("todoTitle為：\(userData.todoTitle)")
+                        print("todoIntroduction為：\(userData.todoIntroduction)")
+                        print("startDateTime為：\(userData.startDateTime)")
+                        print("reminderTime為：\(userData.reminderTime)")
+                        
+                        func convertToDate(_ dateString: String) -> Date? {
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd"
+                            return dateFormatter.date(from: dateString)
+                        }
+                        
+                        func convertToTime(_ timeString: String) -> Date? {
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "HH:mm:ss"
+                            return dateFormatter.date(from: timeString)
+                        }
+                        
+                        // 先將日期和時間字串轉換成對應的 Date 物件
+                        //                        if let startDate = convertToDate(userData.startDateTime),
+                        //                           let reminderTime = convertToTime(userData.reminderTime) {
+                        //
+                        //                            // 使用轉換後的日期和時間來創建 Task 物件
+                        //                            let task = Task(title: userData.todoTitle, description: userData.todoIntroduction, nextReviewDate: startDate, nextReviewTime: reminderTime)
+                        //                            print("task:\(task)")
+                        //                            // 將 Task 加入到 taskStore 的 tasks 陣列中
+                        //                            taskStore.tasks.append(task)
+                        
+                        for index in userData.todoTitle.indices {
+                            if let startDate = convertToDate(userData.startDateTime[index]),
+                               let reminderTime = convertToTime(userData.reminderTime[index]) {
+                                let task = Task(title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime)
+                                DispatchQueue.main.async {
+                                     taskStore.tasks.append(task)
+                                 }
+                            } else {
+                                print("日期或時間轉換失敗")
+                            }
+                        }
+                    }
+                } catch {
+                    print("SoacedList - 解碼失敗：\(error)")
+                }
+            }
+            // 測試
+            //            guard let data = data else {
+            //                print("No data returned from server.")
+            //                return
+            //            }
+            //            if let content = String(data: data, encoding: .utf8) {
+            //                print(content)
+            //            }
+        }
+        .resume()
+    }
 }
 
 // 右上角 新增的button
 struct AddTaskView: View {
     @Environment(\.presentationMode) var presentationMode
     // 改1
-    //    @ObservedObject var taskStore: TaskStore
+    @ObservedObject var taskStore: TaskStore
     @State var title = ""
     @State var description = ""
     @State var nextReviewDate = Date()
@@ -224,6 +348,8 @@ struct AddTaskView: View {
                         DispatchQueue.main.async {
                             isError = false
                             // 如果沒有錯才可以關閉視窗
+                            let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime)
+                            taskStore.tasks.append(task)
                             presentationMode.wrappedValue.dismiss()
                         }
                         print("============== verifyView ==============")
@@ -320,8 +446,6 @@ struct TaskDetailView: View {
 
 struct SpacedView_Previews: PreviewProvider {
     static var previews: some View {
-        // 改1
         SpacedView()
-        AddTaskView()
     }
 }
