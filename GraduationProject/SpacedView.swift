@@ -283,7 +283,9 @@ struct TaskDetailView: View {
             }
             
             Section(header: Text("提醒時間")) {
-                DatePicker("", selection: $task.nextReviewTime, displayedComponents: [.hourAndMinute])
+                DatePicker("開始時間", selection: $task.nextReviewDate, displayedComponents: [.date])
+                    .disabled(true)
+                DatePicker("提醒時間", selection: $task.nextReviewTime, displayedComponents: [.hourAndMinute])
                 //                    .disabled(true)
             }
             
