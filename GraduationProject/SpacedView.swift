@@ -27,7 +27,8 @@ class TaskStore: ObservableObject {
     ]
     // 根據日期返回相應的任務列表
     func tasksForDate(_ date: Date) -> [Task] {
-        return tasks.filter { Calendar.current.isDate($0.nextReviewDate, inSameDayAs: date) }
+        //        return tasks.filter { Calendar.current.isDate($0.nextReviewDate, inSameDayAs: date) }
+        return tasks
     }
     
 }
@@ -56,17 +57,12 @@ struct SpacedView: View {
             .listStyle(PlainListStyle())
             .navigationBarTitle("間隔重複")
             .navigationBarItems(leading:
-                                    HStack {
-                Button {
-                    UserDefaults.standard.set(false, forKey: "signIn")
-                } label: {
-                    Image(systemName: "person.badge.minus")
-                }
-                
-            },
-                                // 改1
-                                //                                trailing: NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
-                                trailing: NavigationLink(destination: AddTaskView()) {
+                                    Button {
+                UserDefaults.standard.set(false, forKey: "signIn")
+            } label: {
+                Image(systemName: "person.badge.minus")
+            }, trailing:
+                                    NavigationLink(destination: AddTaskView()) {
                 Image(systemName: "plus")
             }
             )
