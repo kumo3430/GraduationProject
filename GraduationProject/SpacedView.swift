@@ -514,7 +514,7 @@ struct TaskDetailView: View {
     
     func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
+        formatter.dateFormat = "yyyy/MM/dd"
         return formatter.string(from: date)
     }
     
