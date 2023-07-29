@@ -7,14 +7,14 @@ $data = json_decode($input_data, true);
 // 取得用戶名和密碼
 // $userName = $data['userName'];
 $uid = $_SESSION['uid'];
-$uuid = $data['uuid'];
+// $uuid = $data['uuid'];
 $category_id = 1;
 $todoTitle = $data['title'];
 $todoIntroduction = $data['description'];
 $startDateTime = $data['nextReviewDate'];
 $reminderTime = $data['nextReviewTime'];
 
-$todo_id = "";
+$todo_id = 0;
 $repetition1Count = $data['First'];
 $repetition2Count = $data['third'];
 $repetition3Count = $data['seventh'];
@@ -37,7 +37,7 @@ $TodoSELSql = "SELECT * FROM `Todo` WHERE `uid` = '$uid' && `category_id` = '$ca
 $result = $conn->query($TodoSELSql);
 if ($result->num_rows == 0) {
 
-    $TodoSql = "INSERT INTO `Todo` (`uuid`, `uid`, `category_id`, `todoTitle`, `todoIntroduction`, `startDateTime`, `reminderTime`) VALUES ('$uuid','$uid', '$category_id','$todoTitle','$todoIntroduction','$startDateTime','$reminderTime')";
+    $TodoSql = "INSERT INTO `Todo` (`uid`, `category_id`, `todoTitle`, `todoIntroduction`, `startDateTime`, `reminderTime`) VALUES ('$uid', '$category_id','$todoTitle','$todoIntroduction','$startDateTime','$reminderTime')";
 
     if ($conn->query($TodoSql) === TRUE) {
         $message = "User New Todo successfully" . '<br>';
