@@ -13,8 +13,6 @@ struct Task: Identifiable {
     let id = UUID()
     var title: String
     var description: String
-    //    var nextReviewDate: Date
-    //    var nextReviewTime: Date
     var nextReviewDate: Date
     var nextReviewTime: Date
     var isReviewChecked0: Bool
@@ -63,24 +61,12 @@ struct SpacedView: View {
     
     var body: some View {
         NavigationView {
-            // 這是一個 List 的視圖，用於顯示一個項目的列表。$taskStore.tasks 表示綁定到 taskStore 中的 tasks 屬性，使得列表可以動態地反映 tasks 屬性的變化。$task 是一個綁定到 task 的綁定值，表示列表中的每一個項目。
-//            List($taskStore.tasks) { $task in
-//                // 這是一個導航連結，用於導航到指定的目標視圖。當用戶點擊列表中的項目時，將導航到 TaskDetailView 視圖，並將相應的 task 傳遞給目標視圖。
-//                NavigationLink(destination: TaskDetailView(task: task)) {
-//                    // alignment 參數設置對齊方式，spacing 參數設置子視圖之間的間距
-//                    VStack(alignment: .leading, spacing: 4) {
-//                        Text(task.title)
-//                            .font(.headline)
-//                        Text(task.description)
-//                            .font(.subheadline)
-//                        Text("Start time: \(formattedDate(task.nextReviewDate))")
-//                            .font(.caption)
-//                    }
-//                }
-//            }
             List {
+                // 這是一個 List 的視圖，用於顯示一個項目的列表。$taskStore.tasks 表示綁定到 taskStore 中的 tasks 屬性，使得列表可以動態地反映 tasks 屬性的變化。$task 是一個綁定到 task 的綁定值，表示列表中的每一個項目。
                     ForEach(taskStore.tasks.indices, id: \.self) { index in
+                        // 這是一個導航連結，用於導航到指定的目標視圖。當用戶點擊列表中的項目時，將導航到 TaskDetailView 視圖，並將相應的 task 傳遞給目標視圖。
                         NavigationLink(destination: TaskDetailView(task: $taskStore.tasks[index])) {
+                            // alignment 參數設置對齊方式，spacing 參數設置子視圖之間的間距
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(taskStore.tasks[index].title)
                                     .font(.headline)
@@ -399,146 +385,6 @@ struct AddTaskView: View {
     }
 }
 
-//struct TaskDetailView: View {
-//    @ObservedObject var taskStore = TaskStore()
-//    @Environment(\.presentationMode) var presentationMode
-//    @State var task: Task
-////    @State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
-//    @State var title = ""
-//    @State var description = ""
-//    @State var nextReviewTime = Date()
-//
-//    @State var ReviewChecked0:Bool
-//    @State var ReviewChecked1:Bool
-//    @State var ReviewChecked2:Bool
-//    @State var ReviewChecked3:Bool
-//
-//    init(task: Task) {
-//            self._task = State(initialValue: task)
-//            self._ReviewChecked0 = State(initialValue: task.isReviewChecked0)
-//            self._ReviewChecked1 = State(initialValue: task.isReviewChecked1)
-//            self._ReviewChecked2 = State(initialValue: task.isReviewChecked2)
-//            self._ReviewChecked3 = State(initialValue: task.isReviewChecked3)
-//        }
-//
-//    var nextReviewDates: [Date] {
-//        let intervals = [1, 3, 7, 14]
-//        return intervals.map { Calendar.current.date(byAdding: .day, value: $0, to: task.nextReviewDate)! }
-//    }
-//
-//    var body: some View {
-//        Form {
-//            Section(header: Text("標題")) {
-//                TextField("輸入標題", text: $task.title)
-//                    .onChange(of: task.title) { newValue in
-//                        title = task.title
-//                        print("New title : \(title)")
-//                    }
-//            }
-//            Section(header: Text("內容")) {
-//                TextField("輸入內容", text: $task.description)
-//                    .onChange(of: task.description) { newValue in
-//                        description = task.description
-//                        print("New description : \(description)")
-//                    }
-//            }
-//            Section(header: Text("提醒時間")) {
-//                DatePicker("開始時間", selection: $task.nextReviewDate, displayedComponents: [.date])
-//                    .disabled(true)
-//                DatePicker("提醒時間", selection: $task.nextReviewTime, displayedComponents: [.hourAndMinute])
-//                    .onChange(of: task.nextReviewTime) { newValue in
-//                        nextReviewTime = task.nextReviewTime
-//                        print("New nextReviewTime : \(nextReviewTime)")
-//                    }
-//            }
-//
-//            Section(header: Text("間隔學習法日程表")) {
-//                VStack {
-//                    HStack{
-//                        Toggle(isOn: $task.isReviewChecked0) {
-//                            Text("第\(formattedInterval(0))天： \(formattedDate(nextReviewDates[0]))")
-//                        }
-//                        .onChange(of: task.isReviewChecked0) { newValue in
-//                            ReviewChecked0 = task.isReviewChecked0
-//                            print("New ReviewChecked0 : \(ReviewChecked0)")
-//                        }
-//                    }
-//                    HStack{
-//                        Toggle(isOn: $task.isReviewChecked1) {
-//                            Text("第\(formattedInterval(1))天： \(formattedDate(nextReviewDates[1]))")
-//                        }
-//                        .onChange(of: task.isReviewChecked1) { newValue in
-//                            ReviewChecked1 = task.isReviewChecked1
-//                            print("New ReviewChecked1 : \(ReviewChecked1)")
-//                        }
-//                    }
-//                    HStack{
-//                        Toggle(isOn: $task.isReviewChecked2) {
-//                            Text("第\(formattedInterval(2))天： \(formattedDate(nextReviewDates[2]))")
-//                        }
-//                        .onChange(of: task.isReviewChecked2) { newValue in
-//                            ReviewChecked2 = task.isReviewChecked2
-//                            print("New ReviewChecked2 : \(ReviewChecked2)")
-//                        }
-//                    }
-//                    HStack{
-//                        Toggle(isOn: $task.isReviewChecked3) {
-//                            Text("第\(formattedInterval(3))天： \(formattedDate(nextReviewDates[3]))")
-//                        }
-//                        .onChange(of: task.isReviewChecked3) { newValue in
-//                            ReviewChecked3 = task.isReviewChecked3
-//                            print("New ReviewChecked3 : \(ReviewChecked3)")
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        .onAppear() {
-//            title = task.title
-//            description = task.description
-//            nextReviewTime = task.nextReviewTime
-//            ReviewChecked0 = task.isReviewChecked0
-//            ReviewChecked1 = task.isReviewChecked1
-//            ReviewChecked2 = task.isReviewChecked2
-//            ReviewChecked3 = task.isReviewChecked3
-//        }
-//        .navigationBarTitle("任務")
-//        .navigationBarItems(
-//            trailing: Button("完成", action: handleCompletion)
-//        )
-//    }
-//
-//    func formattedDate(_ date: Date) -> String {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "yyyy/MM/dd"
-//        return formatter.string(from: date)
-//    }
-//
-//    func formattedInterval(_ index: Int) -> Int {
-//        let intervals = [1, 3, 7, 14]
-//        return intervals[index]
-//    }
-//
-//    func handleCompletion() {
-//        let modifiedTask = Task(
-//            title: title,
-//            description: description,
-//            nextReviewDate: task.nextReviewDate,
-//            nextReviewTime: nextReviewTime,
-//            isReviewChecked0: ReviewChecked0,
-//            isReviewChecked1: ReviewChecked1,
-//            isReviewChecked2: ReviewChecked2,
-//            isReviewChecked3: ReviewChecked3
-//        )
-//        print("NEW modifiedTask:\(modifiedTask)")
-//        if let index = taskStore.tasks.firstIndex(where: { $0.id == task.id }) {
-//            taskStore.tasks[index] = modifiedTask
-//            print("NEW taskStore.tasks[index]:\(taskStore.tasks[index])")
-//        }
-//        presentationMode.wrappedValue.dismiss()
-//    }
-//}
-
 struct TaskDetailView: View {
 //@State var task: Task
 @Binding var task: Task
@@ -570,11 +416,7 @@ var body: some View {
                     print("New description : \(task.description)")
                 }
         }
-        
-//        Section(header: Text("開始時間")) {
-//            DatePicker("", selection: $task.nextReviewDate, displayedComponents: [.date, .hourAndMinute])
-//                .disabled(true)
-//        }
+
         Section(header: Text("提醒時間")) {
             DatePicker("開始時間", selection: $task.nextReviewDate, displayedComponents: [.date])
                 .disabled(true)
@@ -585,15 +427,6 @@ var body: some View {
                 }
         }
         
-//        Section(header: Text("下一次間隔重複")) {
-//            ForEach(0..<4) { index in
-//                HStack {
-//                    Toggle(isOn: $isReviewChecked[index]) {
-//                        Text("第\(formattedInterval(index))天： \(formattedDate(nextReviewDates[index]))")
-//                    }
-//                }
-//            }
-//        }
         Section(header: Text("間隔學習法日程表")) {
                         VStack {
                             HStack{
