@@ -13,6 +13,7 @@ $TodoTitle = array();
 $TodoIntroduction = array();
 $StartDateTime = array();
 $ReminderTime = array();
+$todo_id = array();
 $repetition1Status = array();
 $repetition2Status = array();
 $repetition3Status = array();
@@ -45,6 +46,7 @@ if ($result->num_rows > 0) {
         $repetition2Status[] = $row['repetition2Status'];
         $repetition3Status[] = $row['repetition3Status'];
         $repetition4Status[] = $row['repetition4Status'];
+        $todo_id[] = $row['todo_id'];
     }
     $userData = array(
         'userId' => $uid,
@@ -53,6 +55,7 @@ if ($result->num_rows > 0) {
         'todoIntroduction' => $TodoIntroduction,
         'startDateTime' => $StartDateTime,
         'reminderTime' => $ReminderTime,
+        'todo_id' => $todo_id,
         'repetition1Status' => $repetition1Status,
         'repetition2Status' => $repetition2Status,
         'repetition3Status' => $repetition3Status,

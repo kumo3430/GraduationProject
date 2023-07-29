@@ -10,7 +10,7 @@ import SwiftUI
 // 任務結構，每個任務都具有唯一的識別符
 struct Task: Identifiable {
     // 以下是他的屬性
-    let id = UUID()
+    var id: Int
     var title: String
     var description: String
     var nextReviewDate: Date
@@ -22,6 +22,7 @@ struct Task: Identifiable {
 }
 
 struct UserData: Decodable {
+    var todo_id: [String]
     var userId: String?
     var category_id: Int
     var todoTitle: [String]
@@ -39,9 +40,9 @@ struct UserData: Decodable {
 class TaskStore: ObservableObject {
     // 具有一個已發佈的 tasks 屬性，該屬性存儲任務的數組
     @Published var tasks: [Task] = [
-        Task(title: "英文", description: "背L2單字", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: true, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false),
-        Task(title: "國文", description: "燭之武退秦師", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: true, isReviewChecked2: false, isReviewChecked3: false),
-        Task(title: "歷史", description: "中世紀歐洲", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: true)
+        Task(id: 001,title: "英文", description: "背L2單字", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: true, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false),
+        Task(id: 002,title: "英文", description: "燭之武退秦師", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: true, isReviewChecked2: false, isReviewChecked3: false),
+        Task(id: 003,title: "英文", description: "中世紀歐洲", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: true)
     ]
     // 根據日期返回相應的任務列表
     func tasksForDate(_ date: Date) -> [Task] {
@@ -56,8 +57,6 @@ struct SpacedView: View {
     @State var ReviewChecked1: Bool
     @State var ReviewChecked2: Bool
     @State var ReviewChecked3: Bool
-    
-    @State var taskToEdit: Task?
     
     var body: some View {
         NavigationView {
@@ -146,6 +145,7 @@ struct SpacedView: View {
                     } else {
                         print("============== SpecedView ==============")
                         print("SoacedList - userDate:\(userData)")
+                        print("todoId為：\(userData.todo_id)")
                         print("todoTitle為：\(userData.todoTitle)")
                         print("todoIntroduction為：\(userData.todoIntroduction)")
                         print("startDateTime為：\(userData.startDateTime)")
@@ -188,7 +188,9 @@ struct SpacedView: View {
                                 } else {
                                     ReviewChecked3 = true
                                 }
-                                let task = Task(title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
+                                let taskId = Int(userData.todo_id[index])
+                                let task = Task(id: taskId!, title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
+
                                 DispatchQueue.main.async {
                                      taskStore.tasks.append(task)
                                  }
@@ -228,6 +230,7 @@ struct AddTaskView: View {
     
     struct UserData : Decodable {
         var userId: String?
+        var id: Int
         var category_id: Int
         var todoTitle: String
         var todoIntroduction: String
@@ -334,6 +337,7 @@ struct AddTaskView: View {
                         print(String(data: data, encoding: .utf8)!)
                         print("regiest - userDate:\(userData)")
                         print("使用者ID為：\(userData.userId ?? "N/A")")
+                        print("事件id為：\(userData.id)")
                         print("事件種類為：\(userData.category_id)")
                         print("事件名稱為：\(userData.todoTitle)")
                         print("事件簡介為：\(userData.todoIntroduction)")
@@ -348,7 +352,7 @@ struct AddTaskView: View {
                         DispatchQueue.main.async {
                             isError = false
                             // 如果沒有錯才可以關閉視窗並且把此次東西暫存起來
-                            let task = Task(title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime, isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false)
+                            let task = Task(id: userData.id,title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime, isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false)
                             taskStore.tasks.append(task)
                             presentationMode.wrappedValue.dismiss()
                         }
@@ -487,7 +491,7 @@ func formattedInterval(_ index: Int) -> Int {
 
 func handleCompletion() {
     // Handle the completion action here
-    task = Task(title: task.title, description: task.description, nextReviewDate: task.nextReviewDate, nextReviewTime: task.nextReviewTime, isReviewChecked0: task.isReviewChecked0, isReviewChecked1:  task.isReviewChecked1, isReviewChecked2: task.isReviewChecked2, isReviewChecked3:  task.isReviewChecked3 )
+    task = Task(id: task.id,title: task.title, description: task.description, nextReviewDate: task.nextReviewDate, nextReviewTime: task.nextReviewTime, isReviewChecked0: task.isReviewChecked0, isReviewChecked1:  task.isReviewChecked1, isReviewChecked2: task.isReviewChecked2, isReviewChecked3:  task.isReviewChecked3 )
     presentationMode.wrappedValue.dismiss()
 }
 }
