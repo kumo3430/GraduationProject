@@ -91,28 +91,56 @@ struct CalendarView: View {
 //            }
 //        }
 //    }
+//    func eventList() -> some View {
+//        let filteredTasks = taskStore.tasksForDate(selectedDate)
+//
+//        return List(filteredTasks) { task in
+//            VStack(alignment: .leading) {
+////                Text(task.title)
+//                // 顯示日期，根據當前選擇日期是 DATE1、DATE2 還是 DATE3 顯示相應的日期
+//                if formattedDate(selectedDate) == formattedDate(task.nextReviewDate) {
+//                    Text(task.title)
+//                        .font(.headline)
+//                    Text("第一天")
+//                        .font(.subheadline)
+//                } else {
+//                    Text("selectedDate:\(selectedDate)")
+//
+//                    Text("nextReviewDate:\(task.nextReviewDate)")
+//                    Text("今日沒有行程")
+//                        .font(.headline)
+//                }
+//            }
+//        }
+//    }
     func eventList() -> some View {
         let filteredTasks = taskStore.tasksForDate(selectedDate)
         
-        return List(filteredTasks) { task in
-            VStack(alignment: .leading) {
-//                Text(task.title)
-                // 顯示日期，根據當前選擇日期是 DATE1、DATE2 還是 DATE3 顯示相應的日期
-                if formattedDate(selectedDate) == formattedDate(task.nextReviewDate) {
-                    Text(task.title)
-                        .font(.headline)
-                    Text("第一天")
-                        .font(.subheadline)
-                } else {
-                    Text("selectedDate:\(selectedDate)")
-                    
-                    Text("nextReviewDate:\(task.nextReviewDate)")
-                    Text("今日沒有行程")
-                        .font(.headline)
+        return Group {
+            if filteredTasks.isEmpty {
+                // If there are no tasks, display "今日沒有行程" message
+                Text("今日沒有行程")
+                    .font(.headline)
+                    .padding(.vertical)
+            } else {
+                // If there are tasks, display the task list
+                List(filteredTasks) { task in
+                    VStack(alignment: .leading) {
+                        if formattedDate(selectedDate) == formattedDate(task.nextReviewDate) {
+                            Text(task.title)
+                                .font(.headline)
+                            Text("第一天")
+                                .font(.subheadline)
+                        } else {
+                            Text("selectedDate:\(selectedDate)")
+                            Text("nextReviewDate:\(task.nextReviewDate)")
+                        }
+                    }
                 }
             }
         }
     }
+
 }
 
 
