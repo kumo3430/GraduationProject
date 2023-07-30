@@ -46,13 +46,25 @@ class TaskStore: ObservableObject {
     ]
     // 根據日期返回相應的任務列表
     func tasksForDate(_ date: Date) -> [Task] {
-        return tasks
+//        return tasks
+        let filteredTasks = tasks.filter { task in
+                 return formattedDate(date) == formattedDate(task.nextReviewDate)
+             }
+             return filteredTasks
     }
+    
+    func formattedDate(_ date: Date) -> String {
+           let formatter = DateFormatter()
+           formatter.dateFormat = "yyyy/MM/dd"
+           return formatter.string(from: date)
+       }
 }
 
 struct SpacedView: View {
     // 用於觀察任務存儲的屬性，當任務存儲的 tasks 屬性發生變化時，將自動刷新視圖。
-    @ObservedObject var taskStore = TaskStore()
+//    @ObservedObject var taskStore = TaskStore()
+//    @StateObject var taskStore = TaskStore()
+    @EnvironmentObject var taskStore: TaskStore
     @State var ReviewChecked0: Bool
     @State var ReviewChecked1: Bool
     @State var ReviewChecked2: Bool
@@ -87,7 +99,7 @@ struct SpacedView: View {
                         Image(systemName: "person.badge.minus")
                     },
                 trailing:
-                    NavigationLink(destination: AddTaskView(taskStore: taskStore)) {
+                    NavigationLink(destination: AddTaskView(taskStore: _taskStore)) {
                         //                NavigationLink(destination: TaskDetailView(task: $taskToEdit)) {
                         Image(systemName: "plus")
                     }
@@ -95,6 +107,9 @@ struct SpacedView: View {
         }
         .onAppear() {
             StudySpaceList()
+        }
+        .onDisappear() {
+            print("taskStore.tasks_Spaced:\(taskStore.tasks)")
         }
     }
     
@@ -193,11 +208,13 @@ struct SpacedView: View {
                                 
                                 DispatchQueue.main.async {
                                     taskStore.tasks.append(task)
+                                   
                                 }
                             } else {
                                 print("日期或時間轉換失敗")
                             }
                         }
+//                        print("taskStore.tasks:\(taskStore.tasks)")
                         print("============== SpecedView ==============")
                     }
                 } catch {
@@ -220,7 +237,10 @@ struct SpacedView: View {
 // 右上角 新增的button
 struct AddTaskView: View {
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var taskStore: TaskStore
+//    @ObservedObject var taskStore: TaskStore
+//    @StateObject var taskStore: TaskStore
+    @EnvironmentObject var taskStore: TaskStore
+
     @State var title = ""
     @State var description = ""
     @State var nextReviewDate = Date()

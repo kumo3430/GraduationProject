@@ -14,6 +14,7 @@ struct YourApp: App {
   @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
   @AppStorage("signIn") var isSignIn = false
 
+    @StateObject var taskStore = TaskStore()
 
   var body: some Scene {
     WindowGroup {
@@ -21,6 +22,7 @@ struct YourApp: App {
             LoginView()
         } else {
             MainView()
+                .environmentObject(taskStore)
 //            test()
       }
     }

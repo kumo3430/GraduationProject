@@ -15,7 +15,8 @@ struct Event: Identifiable {
 }
 
 struct CalendarView: View {
-    @ObservedObject var taskStore = TaskStore()
+//    @ObservedObject var taskStore = TaskStore()
+    @EnvironmentObject var taskStore: TaskStore
     @State var selectedDate = Date()
     @State var showModal = false
     
@@ -40,6 +41,10 @@ struct CalendarView: View {
                     Spacer()
                 }
             }
+            .onAppear() {
+                print("taskStore:\(taskStore)")
+                print("taskStore.tasks_Calendar:\(taskStore.tasks)")
+            }
         }
     }
     
@@ -47,13 +52,65 @@ struct CalendarView: View {
         DatePicker("Select Date", selection: $selectedDate,
                    in: ...Date.distantFuture, displayedComponents: .date)
             .datePickerStyle(.graphical)
+            .onChange(of: selectedDate) { newValue in
+                selectedDate = newValue
+            }
     }
     
+//    func eventList() -> some View {
+//        let filteredTasks = taskStore.tasksForDate(selectedDate)
+//
+//
+//        return List(filteredTasks) { task in
+//            Text(task.title)
+//        }
+//    }
+    func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd"
+        return formatter.string(from: date)
+    }
+    
+//    func eventList() -> some View {
+//        return List(taskStore.tasks) { task in
+//            VStack(alignment: .leading) {
+////                Text(task.title)
+//                // 顯示日期，根據當前選擇日期是 DATE1、DATE2 還是 DATE3 顯示相應的日期
+//                if formattedDate(selectedDate) == formattedDate(task.nextReviewDate) {
+//                    Text(task.title)
+//                        .font(.headline)
+//                    Text("第一天")
+//                        .font(.subheadline)
+//                } else {
+//                    Text("selectedDate:\(selectedDate)")
+//
+//                    Text("nextReviewDate:\(task.nextReviewDate)")
+//                    Text("今日沒有行程")
+//                        .font(.headline)
+//                }
+//            }
+//        }
+//    }
     func eventList() -> some View {
         let filteredTasks = taskStore.tasksForDate(selectedDate)
         
         return List(filteredTasks) { task in
-            Text(task.title)
+            VStack(alignment: .leading) {
+//                Text(task.title)
+                // 顯示日期，根據當前選擇日期是 DATE1、DATE2 還是 DATE3 顯示相應的日期
+                if formattedDate(selectedDate) == formattedDate(task.nextReviewDate) {
+                    Text(task.title)
+                        .font(.headline)
+                    Text("第一天")
+                        .font(.subheadline)
+                } else {
+                    Text("selectedDate:\(selectedDate)")
+                    
+                    Text("nextReviewDate:\(task.nextReviewDate)")
+                    Text("今日沒有行程")
+                        .font(.headline)
+                }
+            }
         }
     }
 }
