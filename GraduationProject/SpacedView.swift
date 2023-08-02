@@ -706,7 +706,10 @@ struct TaskDetailView: View {
 
 
 struct SpacedView_Previews: PreviewProvider {
+//    @EnvironmentObject var taskStore: TaskStore
     static var previews: some View {
+//        let taskStore = TaskStore()
         SpacedView(ReviewChecked0: false, ReviewChecked1: false, ReviewChecked2: false, ReviewChecked3: false)
+            .environmentObject(TaskStore())
     }
 }

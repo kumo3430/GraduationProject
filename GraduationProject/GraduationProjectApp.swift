@@ -23,7 +23,6 @@ struct YourApp: App {
         } else {
             MainView()
                 .environmentObject(taskStore)
-//            test()
       }
     }
   }

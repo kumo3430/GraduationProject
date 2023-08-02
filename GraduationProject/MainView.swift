@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
+    @EnvironmentObject var taskStore: TaskStore
     var body: some View {
         TabView {
             SpacedView(ReviewChecked0: false, ReviewChecked1: false, ReviewChecked2: false, ReviewChecked3: false)
@@ -31,7 +32,10 @@ struct MainView: View {
 //}
 
 struct MainView_Previews: PreviewProvider {
+    @EnvironmentObject var taskStore: TaskStore
     static var previews: some View {
+        let taskStore = TaskStore()
         MainView()
+            .environmentObject(taskStore)
     }
 }
