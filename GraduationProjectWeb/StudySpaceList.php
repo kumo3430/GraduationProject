@@ -18,6 +18,10 @@ $repetition1Status = array();
 $repetition2Status = array();
 $repetition3Status = array();
 $repetition4Status = array();
+$repetition1Count = array();
+$repetition2Count = array();
+$repetition3Count = array();
+$repetition4Count = array();
 
 $servername = "localhost"; // 資料庫伺服器名稱
 $user = "kumo"; // 資料庫使用者名稱
@@ -33,7 +37,8 @@ if ($conn->connect_error) {
 
 // $TodoSELSql = "SELECT * FROM Todo WHERE uid = '$uid' && category_id = '1';";
 // $TodoSELSql = "SELECT * FROM Todo WHERE uid = '30' && category_id = '1';";
-$TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '30' && category_id = '1';";
+// $TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '30' && category_id = '1';";
+$TodoSELSql = "SELECT * FROM Todo T RIGHT JOIN StudySpacedRepetition SSR ON T.id = SSR.todo_id WHERE T.uid = '$uid' && category_id = '1';";
 
 $result = $conn->query($TodoSELSql);
 if ($result->num_rows > 0) {
@@ -46,6 +51,10 @@ if ($result->num_rows > 0) {
         $repetition2Status[] = $row['repetition2Status'];
         $repetition3Status[] = $row['repetition3Status'];
         $repetition4Status[] = $row['repetition4Status'];
+        $repetition1Count[] = $row['repetition1Count'];
+        $repetition2Count[] = $row['repetition2Count'];
+        $repetition3Count[] = $row['repetition3Count'];
+        $repetition4Count[] = $row['repetition4Count'];
         $todo_id[] = $row['todo_id'];
     }
     $userData = array(
@@ -60,6 +69,10 @@ if ($result->num_rows > 0) {
         'repetition2Status' => $repetition2Status,
         'repetition3Status' => $repetition3Status,
         'repetition4Status' => $repetition4Status,
+        'repetition1Count' => $repetition1Count,
+        'repetition2Count' => $repetition2Count,
+        'repetition3Count' => $repetition3Count,
+        'repetition4Count' => $repetition4Count,
         'message' => ""
     );
     echo json_encode($userData);

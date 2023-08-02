@@ -20,6 +20,12 @@ struct CalendarView: View {
     @State var selectedDate = Date()
     @State var showModal = false
     
+    @State var ReviewChecked0: Bool = false
+    @State var ReviewChecked1: Bool = false
+    @State var ReviewChecked2: Bool = false
+    @State var ReviewChecked3: Bool = false
+    @State var isToday: Bool = false
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -54,6 +60,12 @@ struct CalendarView: View {
             .datePickerStyle(.graphical)
             .onChange(of: selectedDate) { newValue in
                 selectedDate = newValue
+                let today = Calendar.current.startOfDay(for: Date())
+                if formattedDate(selectedDate) == formattedDate(today) {
+                    isToday = true
+                } else {
+                    isToday = false
+                }
             }
     }
     
@@ -113,6 +125,53 @@ struct CalendarView: View {
 //            }
 //        }
 //    }
+//    func eventList() -> some View {
+//        let filteredTasks = taskStore.tasksForDate(selectedDate)
+//
+//        return Group {
+//            if filteredTasks.isEmpty {
+//                // If there are no tasks, display "今日沒有行程" message
+//                Text("今日沒有行程")
+//                    .font(.headline)
+//                    .padding(.vertical)
+//            } else {
+//                // If there are tasks, display the task list
+//                List(filteredTasks) { task in
+//                    VStack(alignment: .leading) {
+//                        if formattedDate(selectedDate) == formattedDate(task.nextReviewDate) {
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("設定日期")
+//                                .font(.subheadline)
+//                        } else if formattedDate(selectedDate) == formattedDate(task.repetition1Count) {
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第一天")
+//                                .font(.subheadline)
+//                        }else if formattedDate(selectedDate) == formattedDate(task.repetition2Count) {
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第三天")
+//                                .font(.subheadline)
+//                        }else if formattedDate(selectedDate) == formattedDate(task.repetition3Count) {
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第七天")
+//                                .font(.subheadline)
+//                        }else if formattedDate(selectedDate) == formattedDate(task.repetition4Count) {
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第十四天")
+//                                .font(.subheadline)
+//                        } else {
+//                            Text("selectedDate:\(selectedDate)")
+//                            Text("nextReviewDate:\(task.nextReviewDate)")
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
     func eventList() -> some View {
         let filteredTasks = taskStore.tasksForDate(selectedDate)
         
@@ -129,14 +188,57 @@ struct CalendarView: View {
                         if formattedDate(selectedDate) == formattedDate(task.nextReviewDate) {
                             Text(task.title)
                                 .font(.headline)
-                            Text("第一天")
+                            Text("設定日期")
                                 .font(.subheadline)
+                        } else if formattedDate(selectedDate) == formattedDate(task.repetition1Count) {
+                            Toggle(isOn: $ReviewChecked0) {
+                                Text("\(task.title) - 第一天")
+                            }
+                            .disabled(!isToday)
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第一天")
+//                                .font(.subheadline)
+                        }else if formattedDate(selectedDate) == formattedDate(task.repetition2Count) {
+                            Toggle(isOn: $ReviewChecked1) {
+                                Text("\(task.title) - 第三天")
+                            }
+                            .disabled(!isToday)
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第三天")
+//                                .font(.subheadline)
+                        }else if formattedDate(selectedDate) == formattedDate(task.repetition3Count) {
+                            Toggle(isOn: $ReviewChecked2) {
+                                Text("\(task.title) - 第七天")
+                            }
+                            .disabled(!isToday)
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第七天")
+//                                .font(.subheadline)
+                        }else if formattedDate(selectedDate) == formattedDate(task.repetition4Count) {
+                            Toggle(isOn: $ReviewChecked3) {
+                                Text("\(task.title) - 第十四天")
+                            }
+                            .disabled(!isToday)
+//                            Text(task.title)
+//                                .font(.headline)
+//                            Text("第十四天")
+//                                .font(.subheadline)
                         } else {
                             Text("selectedDate:\(selectedDate)")
                             Text("nextReviewDate:\(task.nextReviewDate)")
                         }
                     }
+                    .onAppear() {
+                        ReviewChecked0 = task.isReviewChecked0
+                        ReviewChecked1 = task.isReviewChecked1
+                        ReviewChecked2 = task.isReviewChecked2
+                        ReviewChecked3 = task.isReviewChecked3
+                    }
                 }
+                
             }
         }
     }

@@ -15,6 +15,10 @@ struct Task: Identifiable {
     var description: String
     var nextReviewDate: Date
     var nextReviewTime: Date
+    var repetition1Count: Date
+    var repetition2Count: Date
+    var repetition3Count: Date
+    var repetition4Count: Date
     var isReviewChecked0: Bool
     var isReviewChecked1: Bool
     var isReviewChecked2: Bool
@@ -33,6 +37,10 @@ struct UserData: Decodable {
     var repetition2Status: [String?]
     var repetition3Status: [String?]
     var repetition4Status: [String?]
+    var repetition1Count: [String]
+    var repetition2Count: [String]
+    var repetition3Count: [String]
+    var repetition4Count: [String]
     var message: String
 }
 
@@ -40,17 +48,29 @@ struct UserData: Decodable {
 class TaskStore: ObservableObject {
     // 具有一個已發佈的 tasks 屬性，該屬性存儲任務的數組
     @Published var tasks: [Task] = [
-        Task(id: 001,title: "英文", description: "背L2單字", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: true, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false),
-        Task(id: 002,title: "英文", description: "燭之武退秦師", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: true, isReviewChecked2: false, isReviewChecked3: false),
-        Task(id: 003,title: "英文", description: "中世紀歐洲", nextReviewDate: Date(), nextReviewTime: Date(), isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: true)
+        Task(id: 001,title: "英文", description: "背L2單字", nextReviewDate: Date(), nextReviewTime: Date(), repetition1Count: Date(), repetition2Count: Date(), repetition3Count: Date(), repetition4Count: Date(), isReviewChecked0: true, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false),
+        Task(id: 002,title: "英文", description: "燭之武退秦師", nextReviewDate: Date(), nextReviewTime: Date(), repetition1Count: Date(), repetition2Count: Date(), repetition3Count: Date(), repetition4Count: Date(), isReviewChecked0: false, isReviewChecked1: true, isReviewChecked2: false, isReviewChecked3: false),
+        Task(id: 003,title: "英文", description: "中世紀歐洲", nextReviewDate: Date(), nextReviewTime: Date(), repetition1Count: Date(), repetition2Count: Date(), repetition3Count: Date(), repetition4Count: Date(), isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: true)
     ]
     // 根據日期返回相應的任務列表
+//    func tasksForDate(_ date: Date) -> [Task] {
+////        return tasks
+//        let filteredTasks = tasks.filter { task in
+//                 return formattedDate(date) == formattedDate(task.nextReviewDate)
+//             }
+//             return filteredTasks
+//    }
     func tasksForDate(_ date: Date) -> [Task] {
 //        return tasks
-        let filteredTasks = tasks.filter { task in
-                 return formattedDate(date) == formattedDate(task.nextReviewDate)
-             }
-             return filteredTasks
+        let formattedSelectedDate = formattedDate(date)
+               let filteredTasks = tasks.filter { task in
+                   return formattedSelectedDate == formattedDate(task.nextReviewDate) ||
+                          formattedSelectedDate == formattedDate(task.repetition1Count) ||
+                          formattedSelectedDate == formattedDate(task.repetition2Count) ||
+                          formattedSelectedDate == formattedDate(task.repetition3Count) ||
+                            formattedSelectedDate == formattedDate(task.repetition4Count)
+               }
+               return filteredTasks
     }
     
     func formattedDate(_ date: Date) -> String {
@@ -132,7 +152,8 @@ struct SpacedView: View {
             }
         }
         
-        let url = URL(string: "http://127.0.0.1:8888/StudySpaceList.php")!
+//        let url = URL(string: "http://127.0.0.1:8888/StudySpaceList.php")!
+        let url = URL(string: "http://163.17.136.73:443/StudySpaceList.php")!
         //        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
         //        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
         var request = URLRequest(url: url)
@@ -181,6 +202,10 @@ struct SpacedView: View {
                         
                         for index in userData.todoTitle.indices {
                             if let startDate = convertToDate(userData.startDateTime[index]),
+                               let repetition1Count = convertToDate(userData.repetition1Count[index]),
+                               let repetition2Count = convertToDate(userData.repetition2Count[index]),
+                               let repetition3Count = convertToDate(userData.repetition3Count[index]),
+                               let repetition4Count = convertToDate(userData.repetition4Count[index]),
                                let reminderTime = convertToTime(userData.reminderTime[index]) {
                                 
                                 if (userData.repetition1Status[index] == "0" ){
@@ -204,7 +229,7 @@ struct SpacedView: View {
                                     ReviewChecked3 = true
                                 }
                                 let taskId = Int(userData.todo_id[index])
-                                let task = Task(id: taskId!, title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
+                                let task = Task(id: taskId!, title: userData.todoTitle[index], description: userData.todoIntroduction[index], nextReviewDate: startDate, nextReviewTime: reminderTime, repetition1Count: repetition1Count, repetition2Count: repetition2Count, repetition3Count: repetition3Count, repetition4Count: repetition4Count, isReviewChecked0: ReviewChecked0, isReviewChecked1: ReviewChecked1, isReviewChecked2: ReviewChecked2, isReviewChecked3: ReviewChecked3)
                                 
                                 DispatchQueue.main.async {
                                     taskStore.tasks.append(task)
@@ -245,6 +270,10 @@ struct AddTaskView: View {
     @State var description = ""
     @State var nextReviewDate = Date()
     @State var nextReviewTime = Date()
+    @State var repetition1Count = Date()
+    @State var repetition2Count = Date()
+    @State var repetition3Count = Date()
+    @State var repetition4Count = Date()
     @State var messenge = ""
     @State var isError = false
     
@@ -298,6 +327,12 @@ struct AddTaskView: View {
             trailing: Button("完成") { addStudySpaced() }
             // 如果 title 為空，按鈕會被禁用，即無法點擊。
                 .disabled(title.isEmpty)
+                .onDisappear() {
+                    repetition1Count = nextReviewDates[0]
+                    repetition2Count = nextReviewDates[1]
+                    repetition3Count = nextReviewDates[2]
+                    repetition4Count = nextReviewDates[3]
+                }
         )
         
         Text(messenge)
@@ -331,8 +366,9 @@ struct AddTaskView: View {
             }
         }
         
-        let url = URL(string: "http://127.0.0.1:8888/addStudySpaced.php")!
-        //        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
+//        let url = URL(string: "http://127.0.0.1:8888/addStudySpaced.php")!
+        let url = URL(string: "http://163.17.136.73:443/addStudySpaced.php")!
+        //        let url = URL(string: "http://10.21.1.164:8888/addStudySpaced.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "POST"
@@ -372,7 +408,7 @@ struct AddTaskView: View {
                         DispatchQueue.main.async {
                             isError = false
                             // 如果沒有錯才可以關閉視窗並且把此次東西暫存起來
-                            let task = Task(id: Int(userData.todo_id)!,title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime, isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false)
+                            let task = Task(id: Int(userData.todo_id)!,title: title, description: description, nextReviewDate: nextReviewDate, nextReviewTime: nextReviewTime, repetition1Count: repetition1Count, repetition2Count: repetition2Count, repetition3Count: repetition3Count, repetition4Count: repetition4Count, isReviewChecked0: false, isReviewChecked1: false, isReviewChecked2: false, isReviewChecked3: false)
                             taskStore.tasks.append(task)
                             presentationMode.wrappedValue.dismiss()
                         }
@@ -412,11 +448,13 @@ struct AddTaskView: View {
 struct TaskDetailView: View {
     //@State var task: Task
     @Binding var task: Task
+    @EnvironmentObject var taskStore: TaskStore
     //@State var isReviewChecked: [Bool] = Array(repeating: false, count: 4)
     @Environment(\.presentationMode) var presentationMode
     @State var title = ""
     @State var description = ""
     @State var nextReviewTime = Date()
+//    @State var nextReviewTime = Date()
     @State var repetition1Status:Int = 0
     @State var repetition2Status:Int = 0
     @State var repetition3Status:Int = 0
@@ -523,6 +561,10 @@ struct TaskDetailView: View {
             task.isReviewChecked1 = task.isReviewChecked1
             task.isReviewChecked2 = task.isReviewChecked2
             task.isReviewChecked3 = task.isReviewChecked3
+            task.repetition1Count = task.repetition1Count
+            task.repetition2Count = task.repetition2Count
+            task.repetition3Count = task.repetition3Count
+            task.repetition4Count = task.repetition4Count
         }
         .navigationBarTitle("任務")
         .navigationBarItems(
@@ -551,7 +593,7 @@ struct TaskDetailView: View {
     
     func handleCompletion() {
         // Handle the completion action here
-        task = Task(id: task.id,title: task.title, description: task.description, nextReviewDate: task.nextReviewDate, nextReviewTime: task.nextReviewTime, isReviewChecked0: task.isReviewChecked0, isReviewChecked1:  task.isReviewChecked1, isReviewChecked2: task.isReviewChecked2, isReviewChecked3:  task.isReviewChecked3 )
+        task = Task(id: task.id,title: task.title, description: task.description, nextReviewDate: task.nextReviewDate, nextReviewTime: task.nextReviewTime,repetition1Count: task.repetition1Count,repetition2Count: task.repetition2Count,repetition3Count: task.repetition3Count,repetition4Count: task.repetition4Count, isReviewChecked0: task.isReviewChecked0, isReviewChecked1:  task.isReviewChecked1, isReviewChecked2: task.isReviewChecked2, isReviewChecked3:  task.isReviewChecked3 )
         presentationMode.wrappedValue.dismiss()
     }
     
@@ -587,7 +629,8 @@ struct TaskDetailView: View {
             }
         }
         
-        let url = URL(string: "http://127.0.0.1:8888/reviseStudySpaced.php")!
+//        let url = URL(string: "http://127.0.0.1:8888/reviseStudySpaced.php")!
+        let url = URL(string: "http://163.17.136.73:443/reviseStudySpaced.php")!
         //        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
@@ -632,7 +675,7 @@ struct TaskDetailView: View {
                         DispatchQueue.main.async {
                             isError = false
                             // 如果沒有錯才可以關閉視窗並且把此次東西暫存起來
-                            task = Task(id: task.id,title: task.title, description: task.description, nextReviewDate: task.nextReviewDate, nextReviewTime: task.nextReviewTime, isReviewChecked0: task.isReviewChecked0, isReviewChecked1:  task.isReviewChecked1, isReviewChecked2: task.isReviewChecked2, isReviewChecked3:  task.isReviewChecked3 )
+                            task = Task(id: task.id,title: task.title, description: task.description, nextReviewDate: task.nextReviewDate, nextReviewTime: task.nextReviewTime,repetition1Count: task.repetition1Count,repetition2Count: task.repetition2Count,repetition3Count: task.repetition3Count,repetition4Count: task.repetition4Count, isReviewChecked0: task.isReviewChecked0, isReviewChecked1:  task.isReviewChecked1, isReviewChecked2: task.isReviewChecked2, isReviewChecked3:  task.isReviewChecked3 )
                             presentationMode.wrappedValue.dismiss()
                         }
                         print("============== verifyView ==============")
