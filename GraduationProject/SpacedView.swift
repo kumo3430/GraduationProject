@@ -92,6 +92,10 @@ struct SpacedView: View {
 //    @StateObject var taskStore = TaskStore()
     @AppStorage("uid") private var uid: String = ""
     @EnvironmentObject var taskStore: TaskStore
+    
+    // 新增判斷是否已新增過
+    @State var hasLoadedData = false
+    
     @State var ReviewChecked0: Bool
     @State var ReviewChecked1: Bool
     @State var ReviewChecked2: Bool
@@ -133,7 +137,11 @@ struct SpacedView: View {
             )
         }
         .onAppear() {
-            StudySpaceList()
+            if !hasLoadedData {
+                StudySpaceList()
+                hasLoadedData = true
+            }
+            
             // 此部分為google的uid 需要調整他的位置
 //            if Auth.auth().currentUser != nil {
 //              // User is signed in.
