@@ -6,7 +6,8 @@ $data = json_decode($input_data, true);
 
 // 取得用戶名和密碼
 // $userName = $data['userName'];
-$uid = $_SESSION['uid'];
+// $uid = $_SESSION['uid'];
+$uid = $data['uid'];
 $category_id = 1;
 
 $TodoTitle = array();
@@ -57,28 +58,27 @@ if ($result->num_rows > 0) {
         $repetition4Count[] = $row['repetition4Count'];
         $todo_id[] = $row['todo_id'];
     }
-    $userData = array(
-        'userId' => $uid,
-        'category_id' => $category_id,
-        'todoTitle' => $TodoTitle,
-        'todoIntroduction' => $TodoIntroduction,
-        'startDateTime' => $StartDateTime,
-        'reminderTime' => $ReminderTime,
-        'todo_id' => $todo_id,
-        'repetition1Status' => $repetition1Status,
-        'repetition2Status' => $repetition2Status,
-        'repetition3Status' => $repetition3Status,
-        'repetition4Status' => $repetition4Status,
-        'repetition1Count' => $repetition1Count,
-        'repetition2Count' => $repetition2Count,
-        'repetition3Count' => $repetition3Count,
-        'repetition4Count' => $repetition4Count,
-        'message' => ""
-    );
-    echo json_encode($userData);
 } else {
     $message = "no such Todo";
 }
-
+$userData = array(
+    'userId' => $uid,
+    'category_id' => $category_id,
+    'todoTitle' => $TodoTitle,
+    'todoIntroduction' => $TodoIntroduction,
+    'startDateTime' => $StartDateTime,
+    'reminderTime' => $ReminderTime,
+    'todo_id' => $todo_id,
+    'repetition1Status' => $repetition1Status,
+    'repetition2Status' => $repetition2Status,
+    'repetition3Status' => $repetition3Status,
+    'repetition4Status' => $repetition4Status,
+    'repetition1Count' => $repetition1Count,
+    'repetition2Count' => $repetition2Count,
+    'repetition3Count' => $repetition3Count,
+    'repetition4Count' => $repetition4Count,
+    'message' => ""
+);
+echo json_encode($userData);
 $conn->close();
 ?>

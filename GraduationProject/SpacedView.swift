@@ -6,7 +6,10 @@
 //
 
 import SwiftUI
-
+import Foundation
+import Firebase
+import FirebaseAuth
+import GoogleSignIn
 // 任務結構，每個任務都具有唯一的識別符
 struct Task: Identifiable {
     // 以下是他的屬性
@@ -84,6 +87,7 @@ struct SpacedView: View {
     // 用於觀察任務存儲的屬性，當任務存儲的 tasks 屬性發生變化時，將自動刷新視圖。
 //    @ObservedObject var taskStore = TaskStore()
 //    @StateObject var taskStore = TaskStore()
+    @AppStorage("uid") private var uid: String = ""
     @EnvironmentObject var taskStore: TaskStore
     @State var ReviewChecked0: Bool
     @State var ReviewChecked1: Bool
@@ -127,6 +131,29 @@ struct SpacedView: View {
         }
         .onAppear() {
             StudySpaceList()
+            // 此部分為google的uid 需要調整他的位置
+//            if Auth.auth().currentUser != nil {
+//              // User is signed in.
+//                let user = Auth.auth().currentUser
+//                if let user = user {
+//                  // The user's ID, unique to the Firebase project.
+//                  // Do NOT use this value to authenticate with your backend server,
+//                  // if you have one. Use getTokenWithCompletion:completion: instead.
+//                  let uid = user.uid
+////                  let email = user.email
+////                  let photoURL = user.photoURL
+//                  var multiFactorString = "MultiFactor: "
+//                  for info in user.multiFactor.enrolledFactors {
+//                    multiFactorString += info.displayName ?? "[DispayName]"
+//                    multiFactorString += " "
+//                  }
+//                //  成功抓取
+//                  print("uid：\(uid)")
+//                }
+//            } else {
+//              // No user is signed in.
+//              print("登入失敗")
+//            }
         }
         .onDisappear() {
             print("taskStore.tasks_Spaced:\(taskStore.tasks)")
@@ -141,6 +168,8 @@ struct SpacedView: View {
     }
     
     private func StudySpaceList() {
+        UserDefaults.standard.synchronize()
+        print("SpacedView-Uid:\(uid)")
         class URLSessionSingleton {
             static let shared = URLSessionSingleton()
             let session: URLSession
@@ -152,13 +181,16 @@ struct SpacedView: View {
             }
         }
         
-//        let url = URL(string: "http://127.0.0.1:8888/StudySpaceList.php")!
-        let url = URL(string: "http://163.17.136.73:443/StudySpaceList.php")!
+        let url = URL(string: "http://127.0.0.1:8888/StudySpaceList.php")!
+//        let url = URL(string: "http://163.17.136.73:443/StudySpaceList.php")!
         //        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
         //        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        let body : [String: Any]  = [:]
+//        let body : [String: Any]  = [:]
+//        let uid = 30
+//        print("SpacedView-Uid2:\(uid)")
+        let body = ["uid": uid]
         let jsonData = try! JSONSerialization.data(withJSONObject: body, options: [])
         request.httpBody = jsonData
         URLSessionSingleton.shared.session.dataTask(with: request) { data, response, error in

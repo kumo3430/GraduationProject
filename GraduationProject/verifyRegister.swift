@@ -185,8 +185,8 @@ struct verifyRegister: View {
             }
         }
         
-//        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
-        let url = URL(string: "http://163.17.136.73:443/account/register.php")!
+        let url = URL(string: "http://127.0.0.1:8888/account/register.php")!
+//        let url = URL(string: "http://163.17.136.73:443/account/register.php")!
 //        let url = URL(string: "http://10.21.1.164:8888/account/register.php")!
         var request = URLRequest(url: url)
         //        request.cachePolicy = .reloadIgnoringLocalCacheData
@@ -217,6 +217,7 @@ struct verifyRegister: View {
                         print("註冊日期為：\(userData.create_at)")
                         print("message：\(userData.message)")
                         UserDefaults.standard.set(true, forKey: "signIn")
+                        UserDefaults.standard.set("\(userData.userId ?? "N/A")", forKey: "uid")
                         print("============== verifyView ==============")
                         
                     } else if (userData.message == "not yet filled") {

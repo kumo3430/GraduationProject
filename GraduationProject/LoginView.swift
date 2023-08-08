@@ -229,8 +229,8 @@ struct Login : View {
             }
         }
 
-//        let url = URL(string: "http://127.0.0.1:8888/account/login.php")!
-        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
+        let url = URL(string: "http://127.0.0.1:8888/account/login.php")!
+//        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
 //        let url = URL(string: "http://10.21.1.164:8888/account/login.php")!
 //        let url = URL(string: "http://163.17.136.73:443/account/login.php")!
         var request = URLRequest(url: url)
@@ -263,7 +263,7 @@ struct Login : View {
                         print("使用者ID為：\(userData.id)")
                         print("使用者帳號為：\(userData.email)")
                         UserDefaults.standard.set(true, forKey: "signIn")
-
+                        UserDefaults.standard.set("\(userData.id)", forKey: "uid")
                         print("============== loginView ==============")
                         UserDefaults.standard.set(true, forKey: "signIn")
                     }
