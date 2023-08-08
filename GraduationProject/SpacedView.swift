@@ -81,6 +81,9 @@ class TaskStore: ObservableObject {
            formatter.dateFormat = "yyyy/MM/dd"
            return formatter.string(from: date)
        }
+    func clearTasks() {
+            tasks = []  // 清空任务数据
+        }
 }
 
 struct SpacedView: View {

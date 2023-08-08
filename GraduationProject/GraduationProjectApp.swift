@@ -26,7 +26,9 @@ struct YourApp: App {
             if !isSignIn {
                 LoginView()
                     .onAppear() {
+                        taskStore.clearTasks()
                         UserDefaults.standard.set("", forKey: "uid")
+                        
                     }
                 
             } else {
